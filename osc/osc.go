@@ -1,10 +1,27 @@
 package osc
 
-var serverIP string
-var serverPort string
+import (
+	"fmt"
+	"net"
+	"strconv"
+)
 
-func Send() {
-	if false {
-		return
+// Send OSC送信関数
+func Send(ip string, port int, address string) {
+	portStr := strconv.Itoa(port)
+	udpRAddr, err := net.ResolveUDPAddr("udp", ip+":"+portStr)
+	if err != nil {
+		panic(err)
 	}
+	conn, err := net.DialUDP("udp", nil, udpRAddr)
+	if err != nil {
+		panic(err)
+	}
+	defer conn.Close()
+
+	if address[0] != '/' {
+		fmt.Println("Error: OSC address")
+	}
+
+	fmt.Println("送信")
 }
