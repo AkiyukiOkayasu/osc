@@ -2,7 +2,6 @@ package osc
 
 import (
 	"bytes"
-	"bytes/bytes"
 	"encoding/binary"
 	"fmt"
 	"net"
@@ -24,12 +23,12 @@ func CreateSender(ip string, port int) *Client {
 // Send OSC送信関数
 func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	if oscAddr[0] != '/' {
-		fmt.Println("Error: OSC address")
+		fmt.Println("Error: OSCアドレスは'/'から始まる必要があります")
 	}
 
 	data := new(bytes.Buffer)
 	oscArgs := new(bytes.Buffer)
-	typetags := []byte{','}
+	typetags := []byte{','} // stringでもいいかも
 
 	// OSCアドレス
 	data.WriteString(oscAddr)
@@ -43,7 +42,7 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	}
 	conn, err := net.DialUDP("udp", nil, udpRAddr)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer conn.Close()
 
@@ -63,6 +62,7 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 		}
 	}
 
-	fmt.Println("送信")
+	// TODO 送信処理
+
 	return nil
 }
