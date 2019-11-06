@@ -30,10 +30,8 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	oscArgs := new(bytes.Buffer)
 	typetags := []byte{','} // stringでもいいかも
 
-	// OSCアドレス
-	data.WriteString(oscAddr)
-	data.WriteString('0')         //null文字
-	padneeded := len(oscAddr) % 4 //TODO 4バイト
+	oscAddr = oscAddr + "0" //OSCアドレスの末尾にはnull文字('0')が必要
+	writePaddedString(oscAddr, data)
 
 	portStr := strconv.Itoa(c.port)
 	udpRAddr, err := net.ResolveUDPAddr("udp", c.ip+":"+portStr)
@@ -65,4 +63,13 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	// TODO 送信処理
 
 	return nil
+}
+
+// writePaddedString バイトサイズが4の倍数になるようにnull文字（'0'）埋めする
+func writePaddedString(str string, buf *bytes.Buffer) {
+	numPadNeeded := len(str) % 4
+	for i := 0; i < numPadNeeded; i++ {
+		str = str + "0"
+	}
+	buf.WriteString(str)
 }
