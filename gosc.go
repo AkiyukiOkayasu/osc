@@ -36,11 +36,8 @@ func main() {
 		s.Send(oscAddr, oscArgs...)
 
 	case "receive":
-		fmt.Println("receive")
 		flag.Usage()
 	default:
-		fmt.Println("default")
 		flag.Usage()
-
 	}
 }

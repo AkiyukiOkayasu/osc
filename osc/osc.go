@@ -30,7 +30,7 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	oscArgs := new(bytes.Buffer)
 	typetags := "," // OSC typetagの先頭は','
 
-	oscAddr = oscAddr + "0" //OSCアドレスの末尾にはnull文字('0')が必要
+	oscAddr = oscAddr + "0" //OSCアドレスの末尾にはnull文字('\x00')が必要
 	writePaddedString(oscAddr, data)
 
 	portStr := strconv.Itoa(c.port)
@@ -41,28 +41,21 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	// typetag, osc argの追加
 	fmt.Println(args)
 	for _, arg := range args {
-		switch arg.(type) {
-		case int32, int64:
-			fmt.Println("int")
+		argStr := arg.(string)
+		if i, err := strconv.Atoi(argStr); err == nil {
 			typetags = typetags + "i"
-			if err := binary.Write(oscArgs, binary.BigEndian, arg.(int32)); err != nil {
-				fmt.Println("Error: endian")
-			}
-
-		case float32, float64:
-			fmt.Println("float")
-			typetags = typetags + "f"
-			if err := binary.Write(oscArgs, binary.BigEndian, arg.(float32)); err != nil {
-				fmt.Print("Error: endian")
-			}
-
-		case string:
-			fmt.Println("string")
-			typetags = typetags + "s"
-			writePaddedString(arg.(string), oscArgs)
-		default:
-			fmt.Println("default")
+			binary.Write(oscArgs, binary.BigEndian, int32(i))
+			continue
 		}
+
+		if f, err := strconv.ParseFloat(argStr, 32); err == nil {
+			typetags = typetags + "f"
+			binary.Write(oscArgs, binary.BigEndian, float32(f))
+			continue
+		}
+
+		typetags = typetags + "s"
+		writePaddedString(argStr, oscArgs)
 	}
 
 	//typetagをOSCアドレスの末尾に追加
@@ -76,13 +69,12 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	if _, err := conn.Write(data.Bytes()); err != nil {
 		return err
 	}
-	fmt.Println("send, ", len(data.Bytes()), ", ", data)
 
 	return nil
 }
 
 // writePaddedString stringのサイズ（バイト数）を4の倍数に0埋めする
-// 0はnull文字のこと
+// \x00はnull文字のこと
 func writePaddedString(str string, buf *bytes.Buffer) {
 	numPadNeeded := 4 - (len(str) % 4)
 	for i := 0; i < numPadNeeded; i++ {
