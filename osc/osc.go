@@ -40,6 +40,7 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 
 	// typetag, osc argの追加
 	for _, arg := range args {
+		// TODO 型スイッチでできるかも
 		argStr := arg.(string)
 		if i, err := strconv.Atoi(argStr); err == nil {
 			typetags = typetags + "i"
@@ -57,8 +58,8 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 		writePaddedString(argStr, oscArgs)
 	}
 
-	//typetagをOSCアドレスの末尾に追加
-	writePaddedString(typetags, data)
+	typetags = typetags + "\x00"      //末尾にnull文字を追加
+	writePaddedString(typetags, data) //typetagをOSCアドレスの末尾に追加
 
 	//その次にOSCアーギュメントを追加
 	if _, err := data.Write(oscArgs.Bytes()); err != nil {
