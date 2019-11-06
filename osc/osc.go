@@ -2,6 +2,7 @@ package osc
 
 import (
 	"bytes"
+	"bufio"
 	"encoding/binary"
 	"fmt"
 	"net"
@@ -46,17 +47,18 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 
 	// typetag, osc argの追加
 	for _, arg := range args {
-		fmt.Println("%v", arg)
-		switch t := arg.(type) {
-		case int32:
+		switch arg.(type) {
+		case int32, int64:
 			typetags = append(typetags, 'i')
-			err := binary.Write(oscArgs, binary.BigEndian, int32(t))
+			binary.Write(oscArgs, binary.BigEndian, arg.(int32))//TODO エラーハンドル
 
-		case float32:
+		case float32, float64:
 			typetags = append(typetags, 'f')
+			binary.Write(oscArgs, binary.BigEndian, arg.(float32))//TODO エラーハンドル
 
 		case string:
 			typetags = append(typetags, 's')
+			writePaddedString(arg.(string), oscArgs)
 		}
 
 	//typetagをnull文字埋めし、バイト数を4の倍数にする
@@ -73,7 +75,6 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	return nil
 }
 
-// writePaddedString バイトサイズが4の倍数になるようにnull文字（'0'）埋めする
 func writePaddedString(str string, buf *bytes.Buffer) {
 	numPadNeeded := len(str) % 4
 	for i := 0; i < numPadNeeded; i++ {
