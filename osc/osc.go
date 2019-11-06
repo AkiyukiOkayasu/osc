@@ -2,7 +2,6 @@ package osc
 
 import (
 	"bytes"
-	"bufio"
 	"encoding/binary"
 	"fmt"
 	"net"
@@ -35,14 +34,8 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	writePaddedString(oscAddr, data)
 
 	portStr := strconv.Itoa(c.port)
-	udpRAddr, err := net.ResolveUDPAddr("udp", c.ip+":"+portStr)
-	if err != nil {
-		panic(err)
-	}
-	conn, err := net.DialUDP("udp", nil, udpRAddr)
-	if err != nil {
-		return err
-	}
+	udpRAddr, _ := net.ResolveUDPAddr("udp", c.ip+":"+portStr)
+	conn, _ := net.DialUDP("udp", nil, udpRAddr)
 	defer conn.Close()
 
 	// typetag, osc argの追加
@@ -50,16 +43,17 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 		switch arg.(type) {
 		case int32, int64:
 			typetags = append(typetags, 'i')
-			binary.Write(oscArgs, binary.BigEndian, arg.(int32))//TODO エラーハンドル
+			binary.Write(oscArgs, binary.BigEndian, arg.(int32)) //TODO エラーハンドル
 
 		case float32, float64:
 			typetags = append(typetags, 'f')
-			binary.Write(oscArgs, binary.BigEndian, arg.(float32))//TODO エラーハンドル
+			binary.Write(oscArgs, binary.BigEndian, arg.(float32)) //TODO エラーハンドル
 
 		case string:
 			typetags = append(typetags, 's')
 			writePaddedString(arg.(string), oscArgs)
 		}
+	}
 
 	//typetagをnull文字埋めし、バイト数を4の倍数にする
 	//typetagをOSCアドレスの末尾に追加
