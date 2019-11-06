@@ -28,47 +28,50 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 
 	data := new(bytes.Buffer)
 	oscArgs := new(bytes.Buffer)
-	typetags := []byte{','} // stringでもいいかも
+	typetags := "," // OSC typetagの先頭は','
 
 	oscAddr = oscAddr + "0" //OSCアドレスの末尾にはnull文字('0')が必要
 	writePaddedString(oscAddr, data)
 
 	portStr := strconv.Itoa(c.port)
 	udpRAddr, _ := net.ResolveUDPAddr("udp", c.ip+":"+portStr)
-	conn, _ := net.DialUDP("udp", nil, udpRAddr)
+	conn, _ := net.DialUDP("udp", c.laddr, udpRAddr)
 	defer conn.Close()
 
 	// typetag, osc argの追加
 	for _, arg := range args {
 		switch arg.(type) {
 		case int32, int64:
-			typetags = append(typetags, 'i')
+			typetags = typetags + "i"
 			binary.Write(oscArgs, binary.BigEndian, arg.(int32)) //TODO エラーハンドル
 
 		case float32, float64:
-			typetags = append(typetags, 'f')
+			typetags = typetags + "f"
 			binary.Write(oscArgs, binary.BigEndian, arg.(float32)) //TODO エラーハンドル
 
 		case string:
-			typetags = append(typetags, 's')
+			typetags = typetags + "s"
 			writePaddedString(arg.(string), oscArgs)
 		}
 	}
 
-	//typetagをnull文字埋めし、バイト数を4の倍数にする
 	//typetagをOSCアドレスの末尾に追加
-	writePaddedString(string(typetags), data)
+	writePaddedString(typetags, data)
 
 	//その次にOSCアーギュメントを追加
 	if _, err := data.Write(oscArgs.Bytes()); err != nil {
 		return err
 	}
 
-	// TODO 送信処理
+	if _, err := conn.Write(data.Bytes()); err != nil {
+		return err
+	}
 
 	return nil
 }
 
+// writePaddedString stringのサイズ（バイト数）を4の倍数に0埋めする
+// 0はnull文字のこと
 func writePaddedString(str string, buf *bytes.Buffer) {
 	numPadNeeded := len(str) % 4
 	for i := 0; i < numPadNeeded; i++ {
