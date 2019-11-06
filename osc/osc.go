@@ -39,19 +39,29 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	defer conn.Close()
 
 	// typetag, osc argの追加
+	fmt.Println(args)
 	for _, arg := range args {
 		switch arg.(type) {
 		case int32, int64:
+			fmt.Println("int")
 			typetags = typetags + "i"
-			binary.Write(oscArgs, binary.BigEndian, arg.(int32)) //TODO エラーハンドル
+			if err := binary.Write(oscArgs, binary.BigEndian, arg.(int32)); err != nil {
+				fmt.Println("Error: endian")
+			}
 
 		case float32, float64:
+			fmt.Println("float")
 			typetags = typetags + "f"
-			binary.Write(oscArgs, binary.BigEndian, arg.(float32)) //TODO エラーハンドル
+			if err := binary.Write(oscArgs, binary.BigEndian, arg.(float32)); err != nil {
+				fmt.Print("Error: endian")
+			}
 
 		case string:
+			fmt.Println("string")
 			typetags = typetags + "s"
 			writePaddedString(arg.(string), oscArgs)
+		default:
+			fmt.Println("default")
 		}
 	}
 
@@ -66,6 +76,7 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	if _, err := conn.Write(data.Bytes()); err != nil {
 		return err
 	}
+	fmt.Println("send, ", len(data.Bytes()), ", ", data)
 
 	return nil
 }
@@ -73,9 +84,9 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 // writePaddedString stringのサイズ（バイト数）を4の倍数に0埋めする
 // 0はnull文字のこと
 func writePaddedString(str string, buf *bytes.Buffer) {
-	numPadNeeded := len(str) % 4
+	numPadNeeded := 4 - (len(str) % 4)
 	for i := 0; i < numPadNeeded; i++ {
-		str = str + "0"
+		str = str + "\x00"
 	}
 	buf.WriteString(str)
 }

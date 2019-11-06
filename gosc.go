@@ -1,32 +1,46 @@
 package main
 
 import (
+	"flag"
 	"fmt"
+	"os"
+	"strconv"
+
+	"./osc"
 )
 
 func main() {
-	// fmt.Println(len("abc"))
-	hoge("fugafruga")
-}
+	flag.Usage = func() {
+		fmt.Fprintf(os.Stderr, "usage: oscsender: osc [flags]\n")
+	}
 
-func hoge(args ...interface{}) {
-	for _, arg := range args {
-		switch t := arg.(type) {
-		case int32, int64:
-			fmt.Println("int")
-			fmt.Println(arg)
-
-		case float32, float64:
-			fmt.Println("float")
-			fmt.Println(arg)
-
-		case string:
-			fmt.Println("string")
-			fmt.Println(arg)
-
-		default:
-			fmt.Println("default")
-			fmt.Println(t)
+	flag.Parse()
+	fmt.Println(flag.Args())
+	switch flag.Arg(0) {
+	case "send":
+		if len(flag.Args()) < 4 {
+			flag.Usage()
+			return
 		}
+
+		ip := flag.Arg(1)
+		portstr := flag.Arg(2)
+		port, _ := strconv.Atoi(portstr)
+		oscAddr := flag.Arg(3)
+		s := osc.CreateSender(ip, port)
+		numOSCArgs := len(flag.Args()) - 4
+		oscArgs := make([]interface{}, numOSCArgs)
+		for i, o := range flag.Args()[4:] {
+			oscArgs[i] = o
+		}
+		s.Send(oscAddr, oscArgs...)
+
+	case "receive":
+		fmt.Println("receive")
+		flag.Usage()
+	default:
+		fmt.Println("default")
+		flag.Usage()
+
 	}
 }
