@@ -44,7 +44,7 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	}
 	defer conn.Close()
 
-	// typetag, osc arg
+	// typetag, osc argの追加
 	for _, arg := range args {
 		fmt.Println("%v", arg)
 		switch t := arg.(type) {
@@ -58,6 +58,14 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 		case string:
 			typetags = append(typetags, 's')
 		}
+
+	//typetagをnull文字埋めし、バイト数を4の倍数にする
+	//typetagをOSCアドレスの末尾に追加
+	writePaddedString(string(typetags), data)
+
+	//その次にOSCアーギュメントを追加
+	if _, err := data.Write(oscArgs.Bytes()); err != nil {
+		return err
 	}
 
 	// TODO 送信処理
