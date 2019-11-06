@@ -30,7 +30,7 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	oscArgs := new(bytes.Buffer)
 	typetags := "," // OSC typetagの先頭は','
 
-	oscAddr = oscAddr + "0" //OSCアドレスの末尾にはnull文字('\x00')が必要
+	oscAddr = oscAddr + "\x00" //OSCアドレスの末尾にはnull文字('\x00')が必要
 	writePaddedString(oscAddr, data)
 
 	portStr := strconv.Itoa(c.port)
@@ -39,7 +39,6 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	defer conn.Close()
 
 	// typetag, osc argの追加
-	fmt.Println(args)
 	for _, arg := range args {
 		argStr := arg.(string)
 		if i, err := strconv.Atoi(argStr); err == nil {

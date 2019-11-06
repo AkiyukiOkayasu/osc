@@ -15,7 +15,6 @@ func main() {
 	}
 
 	flag.Parse()
-	fmt.Println(flag.Args())
 	switch flag.Arg(0) {
 	case "send":
 		if len(flag.Args()) < 4 {
