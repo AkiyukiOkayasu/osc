@@ -32,7 +32,9 @@ func main() {
 		for i, o := range flag.Args()[4:] {
 			oscArgs[i] = o
 		}
-		s.Send(oscAddr, oscArgs...)
+		if err := s.Send(oscAddr, oscArgs...); err != nil {
+			fmt.Println(err)
+		}
 
 	case "receive":
 		flag.Usage()

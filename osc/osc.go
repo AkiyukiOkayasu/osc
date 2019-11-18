@@ -1,5 +1,7 @@
 package osc
 
+// OSC送受信パッケージ
+
 import (
 	"bytes"
 	"encoding/binary"
