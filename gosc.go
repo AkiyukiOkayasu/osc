@@ -7,7 +7,7 @@ import (
 	"os"
 	"strconv"
 
-	"GOSC/osc"
+	"gosc/osc"
 )
 
 func main() {
