@@ -3,10 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 
-	"./osc"
+	"GOSC/osc"
 )
 
 func main() {
@@ -33,7 +34,7 @@ func main() {
 			oscArgs[i] = o
 		}
 		if err := s.Send(oscAddr, oscArgs...); err != nil {
-			fmt.Println(err)
+			log.Fatalln(err)
 		}
 
 	case "receive":
