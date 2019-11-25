@@ -78,12 +78,8 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 // writePaddedString stringのサイズ（バイト数）を4の倍数に0埋めする
 // \x00はnull文字のこと
 func writePaddedString(str string, buf *bytes.Buffer) {
-	strLength := len(str)
-	if strLength%4 != 0 {
-		numPadNeeded := 4 - (strLength % 4)
-		for i := 0; i < numPadNeeded; i++ {
-			str = str + "\x00"
-		}
+	for len(str)%4 != 0 {
+		str = str + "\x00"
 	}
 	buf.WriteString(str)
 }
