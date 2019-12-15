@@ -1,3 +1,3 @@
-module gosc
+module go-osc
 
 go 1.13

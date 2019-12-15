@@ -3,11 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"go-osc"
 	"log"
 	"os"
 	"strconv"
-
-	"gosc/osc"
 )
 
 func main() {
