@@ -1,6 +1,7 @@
+/*
+Package osc is package send and receive OSC(Open Sound Control)
+*/
 package osc
-
-// OSC送受信パッケージ
 
 import (
 	"bytes"
@@ -10,7 +11,7 @@ import (
 	"strconv"
 )
 
-// Client OSC送信オブジェクト
+// Client OSC client
 type Client struct {
 	ip    string
 	port  int
@@ -42,7 +43,6 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 
 	// typetag, osc argの追加
 	for _, arg := range args {
-		// TODO 型スイッチでできるかも
 		argStr := arg.(string)
 		if i, err := strconv.Atoi(argStr); err == nil {
 			typetags = typetags + "i"
@@ -60,10 +60,10 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 		writePaddedString(argStr, oscArgs)
 	}
 
-	typetags = typetags + "\x00"      //末尾にnull文字を追加
-	writePaddedString(typetags, data) //typetagをOSCアドレスの末尾に追加
+	typetags = typetags + "\x00"      // 末尾にnull文字を追加
+	writePaddedString(typetags, data) // typetagをOSCアドレスの末尾に追加
 
-	//その次にOSCアーギュメントを追加
+	// OSCアーギュメントを追加
 	if _, err := data.Write(oscArgs.Bytes()); err != nil {
 		return err
 	}
