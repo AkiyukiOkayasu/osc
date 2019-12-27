@@ -19,9 +19,20 @@ type Client struct {
 	laddr *net.UDPAddr
 }
 
+// Server OSC server
+type Server struct {
+	port  int
+	laddr *net.UDPAddr
+}
+
 // CreateSender Sender作成関数
 func CreateSender(ip string, port int) *Client {
 	return &Client{ip: ip, port: port, laddr: nil}
+}
+
+// CreateReceiver Receiver作成関数
+func CreateReceiver(port int) *Server {
+	return &Server{port: port, laddr: nil}
 }
 
 // Send OSC送信関数
