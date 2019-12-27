@@ -11,20 +11,21 @@ import (
 
 func main() {
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "usage: oscsender: osc [flags]\n")
+		fmt.Fprintf(os.Stderr, "gosc command-line OSC sender/receiver\n")
 	}
 
 	flag.Parse()
 	switch flag.Arg(0) {
 	case "send":
 		if len(flag.Args()) < 4 {
+			// TODO add flag usage
 			flag.Usage()
 			return
 		}
 
 		ip := flag.Arg(1)
-		portstr := flag.Arg(2)
-		port, _ := strconv.Atoi(portstr)
+		portStr := flag.Arg(2)
+		port, _ := strconv.Atoi(portStr)
 		oscAddr := flag.Arg(3)
 		s := osc.CreateSender(ip, port)
 		numOSCArgs := len(flag.Args()) - 4
@@ -37,8 +38,10 @@ func main() {
 		}
 
 	case "receive":
-		flag.Usage()
+		// TODO add flag usage
+		// flag.Usage()
 	default:
+		// TODO add flag usage
 		flag.Usage()
 	}
 }
