@@ -40,6 +40,20 @@ func main() {
 	case "receive":
 		// TODO add flag usage
 		// flag.Usage()
+		portStr := flag.Arg(1)
+		port, _ := strconv.Atoi(portStr)
+		r := osc.CreateReceiver(port)
+		err := r.Receive("/test")
+		if err != nil {
+			log.Fatalln(err)
+		}
+
+		fmt.Println("begine")
+		for {
+
+		}
+		fmt.Println("end")
+
 	default:
 		// TODO add flag usage
 		flag.Usage()

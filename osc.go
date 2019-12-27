@@ -87,6 +87,70 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	return nil
 }
 
+// Receive OSC receive
+func (s *Server) Receive(oscAddr string) error {
+	portStr := strconv.Itoa(s.port)
+	udpAddr, err := net.ResolveUDPAddr("udp", ":"+portStr)
+	if err != nil {
+		return err
+	}
+	conn, err := net.ListenUDP("udp", udpAddr)
+	if err != nil {
+		return err
+	}
+	defer conn.Close()
+
+	var buf [512]byte
+
+	for {
+		_, addr, err := conn.ReadFromUDP(buf[0:])
+		if err != nil {
+			return err
+		}
+		fmt.Println(addr)
+		// fmt.Println(string(buf[0:]))
+		bufStr := string(buf[0:])
+		oscData := strings.SplitN(bufStr, ",", 2)
+		oscAddr := oscData[0]
+		fmt.Println("OSC address: "+ oscAddr)
+
+		counter := 1
+		for {
+			i := counter * 4 -1
+			if oscData[1][i] == 0 {
+				oscTypeTag := oscData[1][0:i]
+				strings.TrimRight(oscTypeTag, "\x00")//null文字削除				
+				fmt.Println("OSC typetag: " + oscTypeTag)
+
+				oscArgs := []byte(oscData[1][i:])				
+				for pos, c := range oscTypeTag {
+					bindex := pos * 4
+					switch c {
+					case 'i':
+						num := 0
+						buf := bytes.NewBuffer(oscArgs[bindex:bindex+4])
+						fmt.Println(buf)
+						binary.Read(buf, binary.BigEndian, &num)
+						fmt.Println(num)
+						
+					case 'f':
+						num := 0.0
+						buf := bytes.NewBuffer(oscArgs[bindex:bindex+4])
+						fmt.Println(buf)
+						binary.Read(buf, binary.BigEndian, &num)
+						fmt.Println(num)
+						
+					default:
+						fmt.Println("default")
+					}
+				}
+				break
+			}
+			counter++
+		}		
+	}
+}
+
 // writePaddedString stringのサイズ（バイト数）を4の倍数に0埋めする
 // \x00はnull文字のこと
 func writePaddedString(str string, buf *bytes.Buffer) {
