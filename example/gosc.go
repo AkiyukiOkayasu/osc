@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+	// Flag usage
 	flag.Usage = func() {
 		fmt.Fprintf(os.Stderr, "gosc command-line OSC sender/receiver\n")
 	}
@@ -18,7 +19,7 @@ func main() {
 	switch flag.Arg(0) {
 	case "send":
 		if len(flag.Args()) < 4 {
-			// TODO add flag usage
+			// TODO ヘルプ表示
 			flag.Usage()
 			return
 		}
