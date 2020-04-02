@@ -184,6 +184,7 @@ func writePaddedString(str string, buf *bytes.Buffer) {
 }
 
 // appendNullChar 末尾にNull文字を追加する
-func appendNullChar(s string) string {
-	return s + "\x00"
+// \x00はnull文字のこと
+func appendNullChar(s *string) {
+	*s += "\x00"
 }
