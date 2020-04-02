@@ -47,6 +47,7 @@ func send(ip string, port int, oscAddr string) {
 	m := osc.CreateMessage()
 	for i := 4; i < len(flag.Args()); i++ {
 		a := flag.Arg(i)
+		// int
 		if i, err := strconv.Atoi(a); err == nil {
 			m.AddInt(int32(i))
 			continue
@@ -56,6 +57,8 @@ func send(ip string, port int, oscAddr string) {
 			m.AddFloat(float32(f))
 			continue
 		}
+
+		// string
 		m.AddString(a)
 	}
 
