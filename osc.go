@@ -49,20 +49,23 @@ func (m *Message) AddString(arg string) {
 	padString(&arg)
 	m.arguments.WriteString(arg)
 }
+
+// CreateSender Sender作成
 func CreateSender(ip string, port int) *Client {
 	return &Client{ip: ip, port: port, laddr: nil}
 }
 
-// CreateReceiver Receiver作成関数
+// CreateReceiver Receiver作成
 func CreateReceiver(port int) *Server {
 	return &Server{port: port, laddr: nil}
 }
 
-// Send OSC送信関数
+// CreateMessage OSC Message作成
 func CreateMessage() *Message {
 	return &Message{typetag: ",", arguments: new(bytes.Buffer)}
 }
 
+// Send OSC送信
 func (c *Client) Send(oscAddr string, m *Message) error {
 	if oscAddr[0] != '/' {
 		fmt.Println("Error: OSCアドレスは'/'から始まる必要があります")
