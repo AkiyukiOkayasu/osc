@@ -25,7 +25,30 @@ type Server struct {
 	laddr *net.UDPAddr
 }
 
-// CreateSender Sender作成関数
+// Message OSC message
+type Message struct {
+	typetag   string
+	arguments *bytes.Buffer
+}
+
+// AddInt int追加
+func (m *Message) AddInt(arg int32) {
+	m.typetag += "i"
+	binary.Write(m.arguments, binary.BigEndian, arg)
+}
+
+// AddFloat float追加
+func (m *Message) AddFloat(arg float32) {
+	m.typetag += "f"
+	binary.Write(m.arguments, binary.BigEndian, arg)
+}
+
+// AddString string追加
+func (m *Message) AddString(arg string) {
+	m.typetag += "s"
+	padString(&arg)
+	m.arguments.WriteString(arg)
+}
 func CreateSender(ip string, port int) *Client {
 	return &Client{ip: ip, port: port, laddr: nil}
 }
