@@ -126,21 +126,11 @@ func (s *Server) Receive(oscAddr string) error {
 		bufStr := string(buf[0:])
 		oscData := strings.SplitN(bufStr, ",", 2)
 		oscAddr := oscData[0]
-		println("buf")
-		fmt.Printf("%x\n", buf)
-		byteArray := []byte(oscData[1])
-		println("byteArray")
-		fmt.Printf("%x\n", byteArray)
-		oscArgs := bytes.SplitN(byteArray, []byte("\x00"), 2)[1]
-		println("oscArgs")
-		fmt.Printf("%x\n", oscArgs)
 		oscTypesAndArgs := strings.SplitN(oscData[1], "\x00", 2)
 		oscTypetag := oscTypesAndArgs[0]
+		oscArgs := oscTypesAndArgs[1]
 		fmt.Println("OSC address: " + oscAddr)
-		fmt.Println("oscTypesAndArgs[1]")
-		fmt.Printf("%x\n", oscTypesAndArgs[1])
 		println("OSC types: " + oscTypetag)
-		println("len typetag: " + strconv.Itoa(len(oscTypetag)))
 
 		argIndexOffset := 4 - ((len(oscTypetag) + 2) % 4) //2は先頭の','と末尾のnull文字
 		argIndex := argIndexOffset
