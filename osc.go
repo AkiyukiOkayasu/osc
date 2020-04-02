@@ -59,58 +59,46 @@ func CreateReceiver(port int) *Server {
 }
 
 // Send OSC送信関数
-func (c *Client) Send(oscAddr string, args ...interface{}) error {
+func CreateMessage() *Message {
+	return &Message{typetag: ",", arguments: new(bytes.Buffer)}
+}
+
+func (c *Client) Send(oscAddr string, m *Message) error {
 	if oscAddr[0] != '/' {
 		fmt.Println("Error: OSCアドレスは'/'から始まる必要があります")
 	}
 
-	data := new(bytes.Buffer)
-	oscArgs := new(bytes.Buffer)
-	typetags := "," // OSC typetagの先頭は','
+	dataToSend := new(bytes.Buffer)
 
-	oscAddr = appendNullChar(oscAddr)
-	writePaddedString(oscAddr, data)
+	// OSCアドレスの末尾にnull文字追加
+	appendNullChar(&oscAddr)
+	padString(&oscAddr)
+	dataToSend.WriteString(oscAddr)
+
+	// OSC typetagの末尾にnull文字追加
+	appendNullChar(&m.typetag)
+	padString(&m.typetag)
+	dataToSend.WriteString(m.typetag)
 
 	portStr := strconv.Itoa(c.port)
 	udpRAddr, _ := net.ResolveUDPAddr("udp", c.ip+":"+portStr)
 	conn, _ := net.DialUDP("udp", c.laddr, udpRAddr)
 	defer conn.Close()
 
-	// typetag, osc argの追加
-	for _, arg := range args {
-		argStr := arg.(string)
-		if i, err := strconv.Atoi(argStr); err == nil {
-			typetags = typetags + "i"
-			binary.Write(oscArgs, binary.BigEndian, int32(i))
-			continue
-		}
-
-		if f, err := strconv.ParseFloat(argStr, 32); err == nil {
-			typetags = typetags + "f"
-			binary.Write(oscArgs, binary.BigEndian, float32(f))
-			continue
-		}
-
-		typetags = typetags + "s"
-		writePaddedString(argStr, oscArgs)
-	}
-
-	typetags = appendNullChar(typetags)
-	writePaddedString(typetags, data) // typetagをOSCアドレス末尾に追加
-
-	// OSCアーギュメントを追加
-	if _, err := data.Write(oscArgs.Bytes()); err != nil {
+	// dataToSendにOSCアーギュメントを追加
+	if _, err := dataToSend.Write(m.arguments.Bytes()); err != nil {
 		return err
 	}
 
-	if _, err := conn.Write(data.Bytes()); err != nil {
+	// OSC送信
+	if _, err := conn.Write(dataToSend.Bytes()); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// Receive OSC受信関数
+// Receive OSC受信
 func (s *Server) Receive(oscAddr string) error {
 	portStr := strconv.Itoa(s.port)
 	udpAddr, err := net.ResolveUDPAddr("udp", ":"+portStr)
