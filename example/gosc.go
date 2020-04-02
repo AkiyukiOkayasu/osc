@@ -51,7 +51,8 @@ func send(ip string, port int, oscAddr string) {
 			m.AddInt(int32(i))
 			continue
 		}
-		if f, err := strconv.Atoi(a); err == nil {
+		// float
+		if f, err := strconv.ParseFloat(a, 32); err == nil {
 			m.AddFloat(float32(f))
 			continue
 		}
