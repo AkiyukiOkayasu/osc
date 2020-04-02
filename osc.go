@@ -174,13 +174,12 @@ func (s *Server) Receive(oscAddr string) error {
 	}
 }
 
-// writePaddedString stringのサイズ（バイト数）を4の倍数に0埋めする
-// \x00はnull文字のこと
-func writePaddedString(str string, buf *bytes.Buffer) {
-	for len(str)%4 != 0 {
-		str = str + "\x00"
+// padString stringのサイズを4の倍数に0埋めする
+func padString(str *string) {
+	appendNullChar(str)
+	for len(*str)%4 != 0 {
+		appendNullChar(str)
 	}
-	buf.WriteString(str)
 }
 
 // appendNullChar 末尾にNull文字を追加する
