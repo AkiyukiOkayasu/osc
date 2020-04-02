@@ -45,7 +45,7 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	oscArgs := new(bytes.Buffer)
 	typetags := "," // OSC typetagの先頭は','
 
-	oscAddr = oscAddr + "\x00" //OSCアドレスの末尾にはnull文字('\x00')が必要
+	oscAddr = appendNullChar(oscAddr)
 	writePaddedString(oscAddr, data)
 
 	portStr := strconv.Itoa(c.port)
@@ -72,8 +72,8 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 		writePaddedString(argStr, oscArgs)
 	}
 
-	typetags = typetags + "\x00"      // 末尾にnull文字を追加
-	writePaddedString(typetags, data) // typetagをOSCアドレスの末尾に追加
+	typetags = appendNullChar(typetags)
+	writePaddedString(typetags, data) // typetagをOSCアドレス末尾に追加
 
 	// OSCアーギュメントを追加
 	if _, err := data.Write(oscArgs.Bytes()); err != nil {
@@ -158,4 +158,9 @@ func writePaddedString(str string, buf *bytes.Buffer) {
 		str = str + "\x00"
 	}
 	buf.WriteString(str)
+}
+
+// appendNullChar 末尾にNull文字を追加する
+func appendNullChar(s string) string {
+	return s + "\x00"
 }
