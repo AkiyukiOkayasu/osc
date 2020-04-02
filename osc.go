@@ -139,26 +139,21 @@ func (s *Server) Receive(oscAddr string) error {
 			case 'i':
 				println("i")
 				var i int32
-				b := []byte(oscArgs[argIndex : argIndex+4])
-				fmt.Printf("%x\n", b)
-				buf := new(bytes.Buffer)
-				for _, c := range b {
-					buf.WriteByte(c)
-				}
-				println(buf)
+				buf := bytes.NewBuffer([]byte(oscArgs[argIndex : argIndex+4]))
 				if err := binary.Read(buf, binary.BigEndian, &i); err != nil {
 					fmt.Print("binary.Read failed: ", err)
 				}
 				argIndex += 4
-				println("decoded result: ")
 				println(i)
 			case 'f':
 				println("f")
 				var f float32
 				buf := bytes.NewBuffer([]byte(oscArgs[argIndex : argIndex+4]))
-				binary.Read(buf, binary.BigEndian, f)
+				if err := binary.Read(buf, binary.BigEndian, &f); err != nil {
+					fmt.Print("binary.Read failed: ", err)
+				}
 				argIndex += 4
-				println(f)
+				fmt.Printf("%3f\n", f)
 			case 's':
 				println("s")
 			default:
