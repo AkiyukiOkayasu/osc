@@ -176,40 +176,6 @@ func (s *Server) Receive(oscAddr string) error {
 				println(t)
 			}
 		}
-
-		// counter := 1
-		// for {
-		// 	i := counter*4 - 1
-		// 	if oscData[1][i] == 0 {
-		// 		oscTypeTag := oscData[1][0:i]
-		// 		strings.TrimRight(oscTypeTag, "\x00") //null文字削除
-		// 		fmt.Println("OSC typetag: " + oscTypeTag)
-		// 		oscArgs := []byte(oscData[1][i:])
-		// 		for pos, c := range oscTypeTag {
-		// 			bindex := pos * 4
-		// 			switch c {
-		// 			case 'i':
-		// 				num := 0
-		// 				buf := bytes.NewBuffer(oscArgs[bindex : bindex+4])
-		// 				fmt.Println(buf)
-		// 				binary.Read(buf, binary.BigEndian, &num)
-		// 				fmt.Println(num)
-
-		// 			case 'f':
-		// 				num := 0.0
-		// 				buf := bytes.NewBuffer(oscArgs[bindex : bindex+4])
-		// 				fmt.Println(buf)
-		// 				binary.Read(buf, binary.BigEndian, &num)
-		// 				fmt.Println(num)
-
-		// 			default:
-		// 				fmt.Println("default")
-		// 			}
-		// 		}
-		// 		break
-		// 	}
-		// 	counter++
-		// }
 	}
 }
 
