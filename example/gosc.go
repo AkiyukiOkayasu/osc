@@ -28,35 +28,33 @@ func main() {
 		portStr := flag.Arg(2)
 		port, _ := strconv.Atoi(portStr)
 		oscAddr := flag.Arg(3)
-		s := osc.CreateSender(ip, port)
-		numOSCArgs := len(flag.Args()) - 4
-		oscArgs := make([]interface{}, numOSCArgs)
-		for i, o := range flag.Args()[4:] {
-			oscArgs[i] = o
-		}
-		if err := s.Send(oscAddr, oscArgs...); err != nil {
-			log.Fatalln(err)
-		}
+		send(ip, port, oscAddr)
 
 	case "receive":
-		// TODO add flag usage
-		// flag.Usage()
+		// TODO ヘルプ表示
 		portStr := flag.Arg(1)
 		port, _ := strconv.Atoi(portStr)
-		r := osc.CreateReceiver(port)
-		err := r.Receive("/test")
-		if err != nil {
-			log.Fatalln(err)
-		}
-
-		fmt.Println("begine")
-		for {
-
-		}
-		fmt.Println("end")
+		receive(port, "/test") // TODO OSCアドレス周り追加
 
 	default:
 		// TODO add flag usage
 		flag.Usage()
 	}
+}
+
+func send(ip string, port int, oscAddr string) {
+	s := osc.CreateSender(ip, port)
+	numOSCArgs := len(flag.Args()) - 4
+	oscArgs := make([]interface{}, numOSCArgs)
+	for i, o := range flag.Args()[4:] {
+		oscArgs[i] = o
+	}
+	if err := s.Send(oscAddr, oscArgs...); err != nil {
+		log.Fatalln(err)
+	}
+}
+
+func receive(port int, oscAddr string) {
+	r := osc.CreateReceiver(port)
+	go r.Receive(oscAddr)
 }
