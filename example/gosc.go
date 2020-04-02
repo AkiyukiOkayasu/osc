@@ -44,12 +44,21 @@ func main() {
 
 func send(ip string, port int, oscAddr string) {
 	s := osc.CreateSender(ip, port)
-	numOSCArgs := len(flag.Args()) - 4
-	oscArgs := make([]interface{}, numOSCArgs)
-	for i, o := range flag.Args()[4:] {
-		oscArgs[i] = o
+	m := osc.CreateMessage()
+	for i := 4; i < len(flag.Args()); i++ {
+		a := flag.Arg(i)
+		if i, err := strconv.Atoi(a); err == nil {
+			m.AddInt(int32(i))
+			continue
+		}
+		if f, err := strconv.Atoi(a); err == nil {
+			m.AddFloat(float32(f))
+			continue
+		}
+		m.AddString(a)
 	}
-	if err := s.Send(oscAddr, oscArgs...); err != nil {
+
+	if err := s.Send(oscAddr, m); err != nil {
 		log.Fatalln(err)
 	}
 }
