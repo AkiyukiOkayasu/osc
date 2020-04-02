@@ -107,39 +107,39 @@ func (s *Server) Receive(oscAddr string) error {
 		if err != nil {
 			return err
 		}
+		fmt.Println("Addr: ")
 		fmt.Println(addr)
 		// fmt.Println(string(buf[0:]))
 		bufStr := string(buf[0:])
 		oscData := strings.SplitN(bufStr, ",", 2)
 		oscAddr := oscData[0]
-		fmt.Println("OSC address: "+ oscAddr)
+		fmt.Println("OSC address: " + oscAddr)
 
 		counter := 1
 		for {
-			i := counter * 4 -1
+			i := counter*4 - 1
 			if oscData[1][i] == 0 {
 				oscTypeTag := oscData[1][0:i]
-				strings.TrimRight(oscTypeTag, "\x00")//null文字削除				
+				strings.TrimRight(oscTypeTag, "\x00") //null文字削除
 				fmt.Println("OSC typetag: " + oscTypeTag)
-
-				oscArgs := []byte(oscData[1][i:])				
+				oscArgs := []byte(oscData[1][i:])
 				for pos, c := range oscTypeTag {
 					bindex := pos * 4
 					switch c {
 					case 'i':
 						num := 0
-						buf := bytes.NewBuffer(oscArgs[bindex:bindex+4])
+						buf := bytes.NewBuffer(oscArgs[bindex : bindex+4])
 						fmt.Println(buf)
 						binary.Read(buf, binary.BigEndian, &num)
 						fmt.Println(num)
-						
+
 					case 'f':
 						num := 0.0
-						buf := bytes.NewBuffer(oscArgs[bindex:bindex+4])
+						buf := bytes.NewBuffer(oscArgs[bindex : bindex+4])
 						fmt.Println(buf)
 						binary.Read(buf, binary.BigEndian, &num)
 						fmt.Println(num)
-						
+
 					default:
 						fmt.Println("default")
 					}
@@ -147,7 +147,7 @@ func (s *Server) Receive(oscAddr string) error {
 				break
 			}
 			counter++
-		}		
+		}
 	}
 }
 
