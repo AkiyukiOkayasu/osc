@@ -87,7 +87,7 @@ func (c *Client) Send(oscAddr string, args ...interface{}) error {
 	return nil
 }
 
-// Receive OSC receive
+// Receive OSC受信関数
 func (s *Server) Receive(oscAddr string) error {
 	portStr := strconv.Itoa(s.port)
 	udpAddr, err := net.ResolveUDPAddr("udp", ":"+portStr)
