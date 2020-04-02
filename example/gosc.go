@@ -65,5 +65,5 @@ func send(ip string, port int, oscAddr string) {
 
 func receive(port int, oscAddr string) {
 	r := osc.CreateReceiver(port)
-	go r.Receive(oscAddr)
+	r.Receive(oscAddr)
 }
