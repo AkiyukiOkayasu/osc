@@ -123,45 +123,93 @@ func (s *Server) Receive(oscAddr string) error {
 		}
 		fmt.Println("Addr: ")
 		fmt.Println(addr)
-		// fmt.Println(string(buf[0:]))
 		bufStr := string(buf[0:])
 		oscData := strings.SplitN(bufStr, ",", 2)
 		oscAddr := oscData[0]
+		println("buf")
+		fmt.Printf("%x\n", buf)
+		byteArray := []byte(oscData[1])
+		println("byteArray")
+		fmt.Printf("%x\n", byteArray)
+		oscArgs := bytes.SplitN(byteArray, []byte("\x00"), 2)[1]
+		println("oscArgs")
+		fmt.Printf("%x\n", oscArgs)
+		oscTypesAndArgs := strings.SplitN(oscData[1], "\x00", 2)
+		oscTypetag := oscTypesAndArgs[0]
 		fmt.Println("OSC address: " + oscAddr)
+		fmt.Println("oscTypesAndArgs[1]")
+		fmt.Printf("%x\n", oscTypesAndArgs[1])
+		println("OSC types: " + oscTypetag)
+		println("len typetag: " + strconv.Itoa(len(oscTypetag)))
 
-		counter := 1
-		for {
-			i := counter*4 - 1
-			if oscData[1][i] == 0 {
-				oscTypeTag := oscData[1][0:i]
-				strings.TrimRight(oscTypeTag, "\x00") //null文字削除
-				fmt.Println("OSC typetag: " + oscTypeTag)
-				oscArgs := []byte(oscData[1][i:])
-				for pos, c := range oscTypeTag {
-					bindex := pos * 4
-					switch c {
-					case 'i':
-						num := 0
-						buf := bytes.NewBuffer(oscArgs[bindex : bindex+4])
-						fmt.Println(buf)
-						binary.Read(buf, binary.BigEndian, &num)
-						fmt.Println(num)
-
-					case 'f':
-						num := 0.0
-						buf := bytes.NewBuffer(oscArgs[bindex : bindex+4])
-						fmt.Println(buf)
-						binary.Read(buf, binary.BigEndian, &num)
-						fmt.Println(num)
-
-					default:
-						fmt.Println("default")
-					}
+		argIndexOffset := 4 - ((len(oscTypetag) + 2) % 4) //2は先頭の','と末尾のnull文字
+		argIndex := argIndexOffset
+		for _, t := range oscTypetag {
+			switch t {
+			case 'i':
+				println("i")
+				var i int32
+				b := []byte(oscArgs[argIndex : argIndex+4])
+				fmt.Printf("%x\n", b)
+				buf := new(bytes.Buffer)
+				for _, c := range b {
+					buf.WriteByte(c)
 				}
-				break
+				println(buf)
+				if err := binary.Read(buf, binary.BigEndian, &i); err != nil {
+					fmt.Print("binary.Read failed: ", err)
+				}
+				argIndex += 4
+				println("decoded result: ")
+				println(i)
+			case 'f':
+				println("f")
+				var f float32
+				buf := bytes.NewBuffer([]byte(oscArgs[argIndex : argIndex+4]))
+				binary.Read(buf, binary.BigEndian, f)
+				argIndex += 4
+				println(f)
+			case 's':
+				println("s")
+			default:
+				println("Unexpected OSC typetag:")
+				println(t)
 			}
-			counter++
 		}
+
+		// counter := 1
+		// for {
+		// 	i := counter*4 - 1
+		// 	if oscData[1][i] == 0 {
+		// 		oscTypeTag := oscData[1][0:i]
+		// 		strings.TrimRight(oscTypeTag, "\x00") //null文字削除
+		// 		fmt.Println("OSC typetag: " + oscTypeTag)
+		// 		oscArgs := []byte(oscData[1][i:])
+		// 		for pos, c := range oscTypeTag {
+		// 			bindex := pos * 4
+		// 			switch c {
+		// 			case 'i':
+		// 				num := 0
+		// 				buf := bytes.NewBuffer(oscArgs[bindex : bindex+4])
+		// 				fmt.Println(buf)
+		// 				binary.Read(buf, binary.BigEndian, &num)
+		// 				fmt.Println(num)
+
+		// 			case 'f':
+		// 				num := 0.0
+		// 				buf := bytes.NewBuffer(oscArgs[bindex : bindex+4])
+		// 				fmt.Println(buf)
+		// 				binary.Read(buf, binary.BigEndian, &num)
+		// 				fmt.Println(num)
+
+		// 			default:
+		// 				fmt.Println("default")
+		// 			}
+		// 		}
+		// 		break
+		// 	}
+		// 	counter++
+		// }
 	}
 }
 
