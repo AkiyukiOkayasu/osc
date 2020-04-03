@@ -97,7 +97,6 @@ func (c *Client) Send(oscAddr string, m *Message) error {
 	if _, err := conn.Write(dataToSend.Bytes()); err != nil {
 		return err
 	}
-
 	return nil
 }
 
@@ -137,23 +136,19 @@ func (s *Server) Receive(oscAddr string) error {
 		for _, t := range oscTypetag {
 			switch t {
 			case 'i':
-				println("i")
 				var i int32
 				buf := bytes.NewBuffer([]byte(oscArgs[argIndex : argIndex+4]))
 				if err := binary.Read(buf, binary.BigEndian, &i); err != nil {
 					fmt.Print("binary.Read failed: ", err)
 				}
 				argIndex += 4
-				println(i)
 			case 'f':
-				println("f")
 				var f float32
 				buf := bytes.NewBuffer([]byte(oscArgs[argIndex : argIndex+4]))
 				if err := binary.Read(buf, binary.BigEndian, &f); err != nil {
 					fmt.Print("binary.Read failed: ", err)
 				}
 				argIndex += 4
-				fmt.Printf("%3f\n", f)
 			case 's':
 				println("s")
 			default:
