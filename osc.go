@@ -161,7 +161,6 @@ func (s *Server) Receive(oscAddr string) error {
 
 // padString stringのサイズを4の倍数に0埋めする
 func padString(str *string) {
-	appendNullChar(str)
 	for len(*str)%4 != 0 {
 		appendNullChar(str)
 	}
