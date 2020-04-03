@@ -74,7 +74,6 @@ func (buf *MessageBuffer) GetBytes() []byte {
 	}
 	appendNullChar(&typetag)
 	padString(&typetag)
-	println(typetag)
 	b.WriteString(typetag)
 
 	for _, m := range buf.buffer {
