@@ -27,27 +27,32 @@ type Server struct {
 
 // Message OSC message
 type Message struct {
-	typetag   string
-	arguments *bytes.Buffer
+	typetag  rune
+	argument interface{}
+}
+
+// MessageBuffer hoghoge
+type MessageBuffer struct {
+	buffer []Message
 }
 
 // AddInt int追加
-func (m *Message) AddInt(arg int32) {
-	m.typetag += "i"
-	binary.Write(m.arguments, binary.BigEndian, arg)
+func (buf *MessageBuffer) AddInt(arg int32) {
+	m := Message{typetag: 'i', argument: arg}
+	buf.buffer = append(buf.buffer, m)
 }
 
 // AddFloat float追加
-func (m *Message) AddFloat(arg float32) {
-	m.typetag += "f"
-	binary.Write(m.arguments, binary.BigEndian, arg)
+func (buf *MessageBuffer) AddFloat(arg float32) {
+	m := Message{typetag: 'f', argument: arg}
+	buf.buffer = append(buf.buffer, m)
 }
 
 // AddString string追加
-func (m *Message) AddString(arg string) {
-	m.typetag += "s"
+func (buf *MessageBuffer) AddString(arg string) {
 	padString(&arg)
-	m.arguments.WriteString(arg)
+	m := Message{typetag: 's', argument: arg}
+	buf.buffer = append(buf.buffer, m)
 }
 
 // CreateSender Sender作成
@@ -60,13 +65,41 @@ func CreateReceiver(port int) *Server {
 	return &Server{port: port, laddr: nil}
 }
 
-// CreateMessage OSC Message作成
-func CreateMessage() *Message {
-	return &Message{typetag: ",", arguments: new(bytes.Buffer)}
+// GetBytes get OSC typetag and argument []byte
+func (buf *MessageBuffer) GetBytes() []byte {
+	b := new(bytes.Buffer)
+	typetag := ","
+	for _, m := range buf.buffer {
+		typetag += string(m.typetag)
+	}
+	appendNullChar(&typetag)
+	padString(&typetag)
+	println(typetag)
+	b.WriteString(typetag)
+
+	for _, m := range buf.buffer {
+		switch m.typetag {
+		case 'i':
+			if v, ok := m.argument.(int32); ok {
+				binary.Write(b, binary.BigEndian, v)
+			}
+		case 'f':
+			if v, ok := m.argument.(float32); ok {
+				binary.Write(b, binary.BigEndian, v)
+			}
+		case 's':
+			if v, ok := m.argument.(string); ok {
+				b.WriteString(v)
+			}
+		default:
+			println("Unexpected typetag")
+		}
+	}
+	return b.Bytes()
 }
 
 // Send OSC送信
-func (c *Client) Send(oscAddr string, m *Message) error {
+func (c *Client) Send(oscAddr string, buf *MessageBuffer) error {
 	if oscAddr[0] != '/' {
 		fmt.Println("Error: OSCアドレスは'/'から始まる必要があります")
 	}
@@ -78,18 +111,13 @@ func (c *Client) Send(oscAddr string, m *Message) error {
 	padString(&oscAddr)
 	dataToSend.WriteString(oscAddr)
 
-	// OSC typetagの末尾にnull文字追加
-	appendNullChar(&m.typetag)
-	padString(&m.typetag)
-	dataToSend.WriteString(m.typetag)
-
 	portStr := strconv.Itoa(c.port)
 	udpRAddr, _ := net.ResolveUDPAddr("udp", c.ip+":"+portStr)
 	conn, _ := net.DialUDP("udp", c.laddr, udpRAddr)
 	defer conn.Close()
 
-	// dataToSendにOSCアーギュメントを追加
-	if _, err := dataToSend.Write(m.arguments.Bytes()); err != nil {
+	// dataToSendにtypetag, OSCアーギュメントを追加
+	if _, err := dataToSend.Write(buf.GetBytes()); err != nil {
 		return err
 	}
 
