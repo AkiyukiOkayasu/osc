@@ -168,6 +168,7 @@ func (s *Server) Receive(oscAddr string) error {
 				if err := binary.Read(buf, binary.BigEndian, &i); err != nil {
 					fmt.Print("binary.Read failed: ", err)
 				}
+				println(i)
 				argIndex += 4
 			case 'f':
 				var f float32
@@ -175,6 +176,7 @@ func (s *Server) Receive(oscAddr string) error {
 				if err := binary.Read(buf, binary.BigEndian, &f); err != nil {
 					fmt.Print("binary.Read failed: ", err)
 				}
+				println(f)
 				argIndex += 4
 			case 's':
 				println("s")
