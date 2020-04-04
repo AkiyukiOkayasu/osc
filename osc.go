@@ -52,7 +52,7 @@ func (buf *ArgumentBuffer) AddFloat(arg float32) {
 
 // AddString string追加
 func (buf *ArgumentBuffer) AddString(arg string) {
-	padString(&arg)
+	arg = terminateOSCString(arg)
 	a := Argument{typetag: 's', argument: arg}
 	buf.buffer = append(buf.buffer, a)
 }
