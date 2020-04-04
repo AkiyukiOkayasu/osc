@@ -153,12 +153,14 @@ func (s *Server) Receive(oscAddr string) error {
 		oscData := strings.SplitN(bufStr, ",", 2)
 		oscAddr := oscData[0]
 		oscTypesAndArgs := strings.SplitN(oscData[1], "\x00", 2)
-		oscTypetag := oscTypesAndArgs[0]
+		oscTypetag := "," + oscTypesAndArgs[0]
 		oscArgs := oscTypesAndArgs[1]
 		fmt.Println("OSC address: " + oscAddr)
 		println("OSC types: " + oscTypetag)
 
 		argIndexOffset := 4 - ((len(oscTypetag) + 2) % 4) //2は先頭の','と末尾のnull文字
+
+		fmt.Printf("argIndexOffset: %d\n")
 		argIndex := argIndexOffset
 		for _, t := range oscTypetag {
 			switch t {
@@ -188,15 +190,24 @@ func (s *Server) Receive(oscAddr string) error {
 	}
 }
 
-// padString stringのサイズを4の倍数に0埋めする
-func padString(str *string) {
-	for len(*str)%4 != 0 {
-		appendNullChar(str)
-	}
-}
+// // padString stringのサイズを4の倍数に0埋めする
+// func padString(str *string) {
+// 	for len(*str)%4 != 0 {
+// 		appendNullChar(str)
+// 	}
+// }
 
-// appendNullChar 末尾にNull文字を追加する
-// \x00はnull文字のこと
-func appendNullChar(s *string) {
-	*s += "\x00"
+// // appendNullChar 末尾にNull文字を追加する
+// // \x00はnull文字のこと
+// func appendNullChar(s *string) {
+// 	*s += "\x00"
+// }
+
+// terminateOSCString terminate OSC string
+func terminateOSCString(str string) string {
+	str += "\x00" //Add null char at least 1
+	for len(str)%4 != 0 {
+		str += "\x00"
+	}
+	return str
 }
