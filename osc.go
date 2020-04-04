@@ -25,34 +25,34 @@ type Server struct {
 	laddr *net.UDPAddr
 }
 
-// Message OSC message
-type Message struct {
+// Argument OSC argument
+type Argument struct {
 	typetag  rune
 	argument interface{}
 }
 
-// MessageBuffer hoghoge
-type MessageBuffer struct {
-	buffer []Message
+// ArgumentBuffer OSC argument buffer
+type ArgumentBuffer struct {
+	buffer []Argument
 }
 
 // AddInt int追加
-func (buf *MessageBuffer) AddInt(arg int32) {
-	m := Message{typetag: 'i', argument: arg}
-	buf.buffer = append(buf.buffer, m)
+func (buf *ArgumentBuffer) AddInt(arg int32) {
+	a := Argument{typetag: 'i', argument: arg}
+	buf.buffer = append(buf.buffer, a)
 }
 
 // AddFloat float追加
-func (buf *MessageBuffer) AddFloat(arg float32) {
-	m := Message{typetag: 'f', argument: arg}
-	buf.buffer = append(buf.buffer, m)
+func (buf *ArgumentBuffer) AddFloat(arg float32) {
+	a := Argument{typetag: 'f', argument: arg}
+	buf.buffer = append(buf.buffer, a)
 }
 
 // AddString string追加
-func (buf *MessageBuffer) AddString(arg string) {
+func (buf *ArgumentBuffer) AddString(arg string) {
 	padString(&arg)
-	m := Message{typetag: 's', argument: arg}
-	buf.buffer = append(buf.buffer, m)
+	a := Argument{typetag: 's', argument: arg}
+	buf.buffer = append(buf.buffer, a)
 }
 
 // CreateSender Sender作成
@@ -65,8 +65,8 @@ func CreateReceiver(port int) *Server {
 	return &Server{port: port, laddr: nil}
 }
 
-// GetBytes get OSC typetag and argument []byte
-func (buf *MessageBuffer) GetBytes() []byte {
+// Bytes get OSC typetag and argument in []byte
+func (buf *ArgumentBuffer) Bytes() []byte {
 	b := new(bytes.Buffer)
 	typetag := ","
 	for _, m := range buf.buffer {
@@ -98,7 +98,7 @@ func (buf *MessageBuffer) GetBytes() []byte {
 }
 
 // Send OSC送信
-func (c *Client) Send(oscAddr string, buf *MessageBuffer) error {
+func (c *Client) Send(oscAddr string, buf *ArgumentBuffer) error {
 	if oscAddr[0] != '/' {
 		fmt.Println("Error: OSCアドレスは'/'から始まる必要があります")
 	}
@@ -116,7 +116,7 @@ func (c *Client) Send(oscAddr string, buf *MessageBuffer) error {
 	defer conn.Close()
 
 	// dataToSendにtypetag, OSCアーギュメントを追加
-	if _, err := dataToSend.Write(buf.GetBytes()); err != nil {
+	if _, err := dataToSend.Write(buf.Bytes()); err != nil {
 		return err
 	}
 

@@ -44,7 +44,7 @@ func main() {
 
 func send(ip string, port int, oscAddr string) {
 	s := osc.CreateSender(ip, port)
-	buf := osc.MessageBuffer{}
+	buf := osc.ArgumentBuffer{}
 	for i := 4; i < len(flag.Args()); i++ {
 		a := flag.Arg(i)
 		// int
