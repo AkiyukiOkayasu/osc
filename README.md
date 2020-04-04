@@ -1,8 +1,20 @@
 # go-osc  
-OSC(Open Sound Control) package for golang.
+OSC(Open Sound Control) package for Go. Implemented in pure Go.  
+
+## Implemented  
+- OSC Message  
+- int32  
+- float32  
+- osc string  
+
+## NOT implemented  
+- OSC Bundle  
+- time tag
+- blob  
+
   
-### Example gosc  
-Simple command line OSC sender and receiver.  
+## Example  
+### gosc: command line OSC sender, receiver  
 
 #### Send  
 ```bash
