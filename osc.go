@@ -12,6 +12,8 @@ import (
 	"strings"
 )
 
+const nullChar = '\x00'
+
 // Client OSC client
 type Client struct {
 	ip    string
@@ -72,8 +74,7 @@ func (buf *ArgumentBuffer) Bytes() []byte {
 	for _, m := range buf.buffer {
 		typetag += string(m.typetag)
 	}
-	appendNullChar(&typetag)
-	padString(&typetag)
+	typetag = terminateOSCString(typetag)
 	b.WriteString(typetag)
 
 	for _, m := range buf.buffer {
@@ -104,10 +105,7 @@ func (c *Client) Send(oscAddr string, buf *ArgumentBuffer) error {
 	}
 
 	dataToSend := new(bytes.Buffer)
-
-	// OSCアドレスの末尾にnull文字追加
-	appendNullChar(&oscAddr)
-	padString(&oscAddr)
+	oscAddr = terminateOSCString(oscAddr)
 	dataToSend.WriteString(oscAddr)
 
 	portStr := strconv.Itoa(c.port)
@@ -205,9 +203,9 @@ func (s *Server) Receive(oscAddr string) error {
 
 // terminateOSCString terminate OSC string
 func terminateOSCString(str string) string {
-	str += "\x00" //Add null char at least 1
+	str += string(nullChar) //Add null char at least 1
 	for len(str)%4 != 0 {
-		str += "\x00"
+		str += string(nullChar)
 	}
 	return str
 }
