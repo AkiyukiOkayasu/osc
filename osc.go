@@ -138,78 +138,73 @@ func (s *Server) Receive(oscAddr string) error {
 	}
 	defer conn.Close()
 
-	var buf [512]byte
+	var b [512]byte
 
 	for {
-		_, addr, err := conn.ReadFromUDP(buf[0:])
+		_, a, err := conn.ReadFromUDP(b[0:])
 		if err != nil {
 			return err
 		}
 		fmt.Println("Addr: ")
-		fmt.Println(addr)
-		bufStr := string(buf[0:])
-		oscData := strings.SplitN(bufStr, ",", 2)
-		oscAddr := oscData[0]
-		oscTypesAndArgs := strings.SplitN(oscData[1], "\x00", 2)
-		oscTypetag := "," + oscTypesAndArgs[0]
-		oscArgs := oscTypesAndArgs[1]
-		fmt.Println("OSC address: " + oscAddr)
-		println("OSC types: " + oscTypetag)
-
-		argIndexOffset := 4 - ((len(oscTypetag) + 2) % 4) //2は先頭の','と末尾のnull文字
-
-		fmt.Printf("argIndexOffset: %d\n")
-		argIndex := argIndexOffset
-		for _, t := range oscTypetag {
-			switch t {
-			case 'i':
-				var i int32
-				buf := bytes.NewBuffer([]byte(oscArgs[argIndex : argIndex+4]))
-				if err := binary.Read(buf, binary.BigEndian, &i); err != nil {
-					fmt.Print("binary.Read failed: ", err)
-				}
-				println(i)
-				argIndex += 4
-			case 'f':
-				var f float32
-				buf := bytes.NewBuffer([]byte(oscArgs[argIndex : argIndex+4]))
-				if err := binary.Read(buf, binary.BigEndian, &f); err != nil {
-					fmt.Print("binary.Read failed: ", err)
-				}
-				println(f)
-				argIndex += 4
-			case 's':
-				println("s")
-			default:
-				println("Unexpected OSC typetag:")
-				println(t)
-			}
-		}
+		fmt.Println(a)
+		p := string(b[0:])
+		addr, _ := splitOSCPacket(p)
+		fmt.Printf("OSC address: %s\n", addr)
 	}
 }
 
-// splitOSCStrings split string by OSCstring terminate position
+// splitOSCPacket split string by OSCstring terminate position
 // null文字は4つまでしか連続しない
-func splitOSCStrings(str string) []string {
-	var s []string
-	n := false
-	o := 0
-	for i, r := range str {
-		if n {
-			if r != nullChar {
-				s = append(s, str[o:i-1])
-				o = i
-				n = false
-			}
-			continue
-		}
+func splitOSCPacket(str string) (oscAddr string, buf ArgumentBuffer) {
+	buf = ArgumentBuffer{}
+	if str[0] != '/' {
+		println("OSCアドレスは/から始まる必要があります")
+	}
 
-		if r == nullChar {
-			n = true
+	s := strings.SplitN(str, ",", 2)
+	oscAddr = s[0]
+	typetagAndArgs := strings.SplitN(s[1], "\x00", 2)
+	typetag := typetagAndArgs[0]
+	fmt.Printf("typetag in String: %s\n", typetag)
+	fmt.Printf("typetag in Hex: %x\n", typetag)
+	args := typetagAndArgs[1]
+	fmt.Printf("args: %x\n", args)
+
+	// remove nullChar
+	o := numNeededNullChar(len(typetag) + 2) //2 means typetag prefix "," and a terminate nullChar
+	args = args[o:]
+	println("removed prefix nullchar")
+	fmt.Printf("args: %x\n", args)
+
+	i := 0
+	for _, t := range typetag {
+		switch t {
+		case 'i':
+			var v int32
+			b := bytes.NewBuffer([]byte(args[i : i+4]))
+			if err := binary.Read(b, binary.BigEndian, &v); err != nil {
+				fmt.Print("binary.Read failed: ", err)
+			}
+			fmt.Printf("i: %d\n", v)
+			buf.AddInt(v)
+			i += 4
+		case 'f':
+			var v float32
+			b := bytes.NewBuffer([]byte(args[i : i+4]))
+			if err := binary.Read(b, binary.BigEndian, &v); err != nil {
+				fmt.Print("binary.Read failed: ", err)
+			}
+			fmt.Printf("f: %3f\n", v)
+			buf.AddFloat(v)
+			i += 4
+		case 's':
+			println("s")
+		default:
+			println("Unexpected OSC typetag:")
+			println(t)
 		}
 	}
-	s = append(s, str[0:])
-	return s
+	return
 }
 
 // terminateOSCString terminate OSC string
@@ -219,4 +214,36 @@ func terminateOSCString(str string) string {
 		str += string(nullChar)
 	}
 	return str
+}
+
+// numNeededNullChar is count nullChar for pad 4bytes
+func numNeededNullChar(l int) int {
+	n := 0
+	if l%4 != 0 {
+		n = 4 - (l % 4)
+	}
+	fmt.Printf("%d: %d\n", l, n)
+	return n
+}
+
+// split2OSCStrings hogehgoe
+func split2OSCStrings(s string) (string, string) {
+	isNullChar := false
+	var splited string
+	var remainds string
+	for i, r := range s {
+		if isNullChar {
+			if r != nullChar {
+				splited = s[:i-1]
+				remainds = s[i:]
+			}
+		} else {
+			if r == nullChar {
+				isNullChar = true
+			}
+		}
+	}
+
+	strings.TrimRight(splited, string(nullChar)) //return splited osc string without null char
+	return splited, remainds
 }
