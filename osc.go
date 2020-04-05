@@ -57,8 +57,8 @@ func (buf *ArgumentBuffer) AddString(arg string) {
 	buf.buffer = append(buf.buffer, a)
 }
 
-// CreateSender Sender作成
-func CreateSender(ip string, port int) *Client {
+// NewSender Sender作成
+func NewSender(ip string, port int) *Client {
 	return &Client{ip: ip, port: port, laddr: nil}
 }
 
