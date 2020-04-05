@@ -62,8 +62,8 @@ func NewSender(ip string, port int) *Client {
 	return &Client{ip: ip, port: port, laddr: nil}
 }
 
-// CreateReceiver Receiver作成
-func CreateReceiver(port int) *Server {
+// NewReceiver Receiver作成
+func NewReceiver(port int) *Server {
 	return &Server{port: port, laddr: nil}
 }
 
