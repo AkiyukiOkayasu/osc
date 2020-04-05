@@ -141,12 +141,9 @@ func (s *Server) Receive(oscAddr string) error {
 	var b [512]byte
 
 	for {
-		_, a, err := conn.ReadFromUDP(b[0:])
-		if err != nil {
+		if _, _, err := conn.ReadFromUDP(b[0:]); err != nil {
 			return err
 		}
-		fmt.Println("Addr: ")
-		fmt.Println(a)
 		p := string(b[0:])
 		addr, _ := splitOSCPacket(p)
 		// TODO handler implementation
@@ -164,10 +161,10 @@ func splitOSCPacket(str string) (oscAddr string, buf ArgumentBuffer) {
 
 	s := strings.SplitN(str, ",", 2) //',' is beginning of OSC typetag
 	oscAddr = s[0]
+	fmt.Printf("OSC address: %s\n", oscAddr)
 	typetagAndArgs := "," + s[1]
 	typetag, args := split2OSCStrings(typetagAndArgs)
 	fmt.Printf("typetag in String: %s\n", typetag)
-	fmt.Printf("typetag in Hex: %x\n", typetag)
 	fmt.Printf("args: %x\n", args)
 	if typetag[0] != ',' {
 		println("OSC typetagは,から始まる必要があります")
