@@ -149,6 +149,7 @@ func (s *Server) Receive(oscAddr string) error {
 		fmt.Println(a)
 		p := string(b[0:])
 		addr, _ := splitOSCPacket(p)
+		// TODO handler implementation
 		fmt.Printf("OSC address: %s\n", addr)
 	}
 }
@@ -161,20 +162,17 @@ func splitOSCPacket(str string) (oscAddr string, buf ArgumentBuffer) {
 		println("OSCアドレスは/から始まる必要があります")
 	}
 
-	s := strings.SplitN(str, ",", 2)
+	s := strings.SplitN(str, ",", 2) //',' is beginning of OSC typetag
 	oscAddr = s[0]
-	typetagAndArgs := strings.SplitN(s[1], "\x00", 2)
-	typetag := typetagAndArgs[0]
+	typetagAndArgs := "," + s[1]
+	typetag, args := split2OSCStrings(typetagAndArgs)
 	fmt.Printf("typetag in String: %s\n", typetag)
 	fmt.Printf("typetag in Hex: %x\n", typetag)
-	args := typetagAndArgs[1]
 	fmt.Printf("args: %x\n", args)
-
-	// remove nullChar
-	o := numNeededNullChar(len(typetag) + 2) //2 means typetag prefix "," and a terminate nullChar
-	args = args[o:]
-	println("removed prefix nullchar")
-	fmt.Printf("args: %x\n", args)
+	if typetag[0] != ',' {
+		println("OSC typetagは,から始まる必要があります")
+	}
+	typetag = typetag[1:]
 
 	i := 0
 	for _, t := range typetag {
@@ -232,18 +230,22 @@ func split2OSCStrings(s string) (string, string) {
 	var splited string
 	var remainds string
 	for i, r := range s {
-		if isNullChar {
-			if r != nullChar {
-				splited = s[:i-1]
-				remainds = s[i:]
-			}
-		} else {
+		if !isNullChar {
 			if r == nullChar {
 				isNullChar = true
+				continue
+			}
+		}
+
+		if isNullChar {
+			if i%4 == 0 {
+				splited = s[:i]
+				remainds = s[i:]
+				break
 			}
 		}
 	}
 
-	strings.TrimRight(splited, string(nullChar)) //return splited osc string without null char
+	splited = strings.TrimRight(splited, string(nullChar)) //return splited osc string without null char
 	return splited, remainds
 }
