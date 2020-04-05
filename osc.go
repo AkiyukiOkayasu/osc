@@ -188,18 +188,29 @@ func (s *Server) Receive(oscAddr string) error {
 	}
 }
 
-// // padString stringのサイズを4の倍数に0埋めする
-// func padString(str *string) {
-// 	for len(*str)%4 != 0 {
-// 		appendNullChar(str)
-// 	}
-// }
+// splitOSCStrings split string by OSCstring terminate position
+// null文字は4つまでしか連続しない
+func splitOSCStrings(str string) []string {
+	var s []string
+	n := false
+	o := 0
+	for i, r := range str {
+		if n {
+			if r != nullChar {
+				s = append(s, str[o:i-1])
+				o = i
+				n = false
+			}
+			continue
+		}
 
-// // appendNullChar 末尾にNull文字を追加する
-// // \x00はnull文字のこと
-// func appendNullChar(s *string) {
-// 	*s += "\x00"
-// }
+		if r == nullChar {
+			n = true
+		}
+	}
+	s = append(s, str[0:])
+	return s
+}
 
 // terminateOSCString terminate OSC string
 func terminateOSCString(str string) string {
