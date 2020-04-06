@@ -202,8 +202,8 @@ func splitOSCPacket(str string) (oscAddr string, buf ArgumentBuffer) {
 	return
 }
 
-// terminateOSCString terminate OSC string
-func terminateOSCString(str string) string {
+// TerminateOSCString terminate OSC string
+func TerminateOSCString(str string) string {
 	str += string(nullChar) //Add null char at least 1
 	for len(str)%4 != 0 {
 		str += string(nullChar)
