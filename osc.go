@@ -161,11 +161,8 @@ func splitOSCPacket(str string) (m Message) {
 
 	s := strings.SplitN(str, ",", 2) //',' is beginning of OSC typetag
 	m.Address = s[0]
-	fmt.Printf("OSC address: %s\n", m.Address)
 	typetagAndArgs := "," + s[1]
 	typetag, args := split2OSCStrings(typetagAndArgs)
-	fmt.Printf("typetag in String: %s\n", typetag)
-	fmt.Printf("args: %x\n", args)
 	if typetag[0] != ',' {
 		println("OSC typetagは,から始まる必要があります")
 	}
