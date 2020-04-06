@@ -33,28 +33,29 @@ type Argument struct {
 	argument interface{}
 }
 
-// ArgumentBuffer OSC argument buffer
-type ArgumentBuffer struct {
-	buffer []Argument
+// Message wraped OSC message
+type Message struct {
+	Address   string
+	arguments []Argument
 }
 
 // AddInt int追加
-func (buf *ArgumentBuffer) AddInt(arg int32) {
+func (m *Message) AddInt(arg int32) {
 	a := Argument{typetag: 'i', argument: arg}
-	buf.buffer = append(buf.buffer, a)
+	m.arguments = append(m.arguments, a)
 }
 
 // AddFloat float追加
-func (buf *ArgumentBuffer) AddFloat(arg float32) {
+func (m *Message) AddFloat(arg float32) {
 	a := Argument{typetag: 'f', argument: arg}
-	buf.buffer = append(buf.buffer, a)
+	m.arguments = append(m.arguments, a)
 }
 
 // AddString string追加
-func (buf *ArgumentBuffer) AddString(arg string) {
-	arg = terminateOSCString(arg)
+func (m *Message) AddString(arg string) {
+	arg = TerminateOSCString(arg)
 	a := Argument{typetag: 's', argument: arg}
-	buf.buffer = append(buf.buffer, a)
+	m.arguments = append(m.arguments, a)
 }
 
 // NewSender Sender作成
@@ -68,27 +69,27 @@ func NewReceiver(port int) *Server {
 }
 
 // Bytes get OSC typetag and argument in []byte
-func (buf *ArgumentBuffer) Bytes() []byte {
+func (m *Message) Bytes() []byte {
 	b := new(bytes.Buffer)
 	typetag := ","
-	for _, m := range buf.buffer {
-		typetag += string(m.typetag)
+	for _, a := range m.arguments {
+		typetag += string(a.typetag)
 	}
-	typetag = terminateOSCString(typetag)
+	typetag = TerminateOSCString(typetag)
 	b.WriteString(typetag)
 
-	for _, m := range buf.buffer {
-		switch m.typetag {
+	for _, a := range m.arguments {
+		switch a.typetag {
 		case 'i':
-			if v, ok := m.argument.(int32); ok {
+			if v, ok := a.argument.(int32); ok {
 				binary.Write(b, binary.BigEndian, v)
 			}
 		case 'f':
-			if v, ok := m.argument.(float32); ok {
+			if v, ok := a.argument.(float32); ok {
 				binary.Write(b, binary.BigEndian, v)
 			}
 		case 's':
-			if v, ok := m.argument.(string); ok {
+			if v, ok := a.argument.(string); ok {
 				b.WriteString(v)
 			}
 		default:
@@ -99,14 +100,14 @@ func (buf *ArgumentBuffer) Bytes() []byte {
 }
 
 // Send OSC送信
-func (c *Client) Send(oscAddr string, buf *ArgumentBuffer) error {
-	if oscAddr[0] != '/' {
+func (c *Client) Send(m *Message) error {
+	if m.Address[0] != '/' {
 		fmt.Println("Error: OSCアドレスは'/'から始まる必要があります")
 	}
 
 	dataToSend := new(bytes.Buffer)
-	oscAddr = terminateOSCString(oscAddr)
-	dataToSend.WriteString(oscAddr)
+	m.Address = TerminateOSCString(m.Address)
+	dataToSend.WriteString(m.Address)
 
 	portStr := strconv.Itoa(c.port)
 	udpRAddr, _ := net.ResolveUDPAddr("udp", c.ip+":"+portStr)
@@ -114,7 +115,7 @@ func (c *Client) Send(oscAddr string, buf *ArgumentBuffer) error {
 	defer conn.Close()
 
 	// dataToSendにtypetag, OSCアーギュメントを追加
-	if _, err := dataToSend.Write(buf.Bytes()); err != nil {
+	if _, err := dataToSend.Write(m.Bytes()); err != nil {
 		return err
 	}
 
@@ -145,23 +146,22 @@ func (s *Server) Receive() error {
 			return err
 		}
 		p := string(b[0:])
-		addr, _ := splitOSCPacket(p)
+		m := splitOSCPacket(p)
 		// TODO handler implementation
-		fmt.Printf("OSC address: %s\n", addr)
+		fmt.Printf("OSC address: %s\n", m.Address)
 	}
 }
 
 // splitOSCPacket split string by OSCstring terminate position
 // null文字は4つまでしか連続しない
-func splitOSCPacket(str string) (oscAddr string, buf ArgumentBuffer) {
-	buf = ArgumentBuffer{}
+func splitOSCPacket(str string) (m Message) {
 	if str[0] != '/' {
 		println("OSCアドレスは/から始まる必要があります")
 	}
 
 	s := strings.SplitN(str, ",", 2) //',' is beginning of OSC typetag
-	oscAddr = s[0]
-	fmt.Printf("OSC address: %s\n", oscAddr)
+	m.Address = s[0]
+	fmt.Printf("OSC address: %s\n", m.Address)
 	typetagAndArgs := "," + s[1]
 	typetag, args := split2OSCStrings(typetagAndArgs)
 	fmt.Printf("typetag in String: %s\n", typetag)
@@ -181,7 +181,7 @@ func splitOSCPacket(str string) (oscAddr string, buf ArgumentBuffer) {
 				fmt.Print("binary.Read failed: ", err)
 			}
 			fmt.Printf("i: %d\n", v)
-			buf.AddInt(v)
+			m.AddInt(v)
 			i += 4
 		case 'f':
 			var v float32
@@ -190,7 +190,7 @@ func splitOSCPacket(str string) (oscAddr string, buf ArgumentBuffer) {
 				fmt.Print("binary.Read failed: ", err)
 			}
 			fmt.Printf("f: %3f\n", v)
-			buf.AddFloat(v)
+			m.AddFloat(v)
 			i += 4
 		case 's':
 			println("s")
