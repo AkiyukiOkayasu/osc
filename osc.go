@@ -14,6 +14,11 @@ import (
 
 const nullChar = '\x00'
 
+// Handler OSC messege handler
+type Handler interface {
+	Handle(m *Message)
+}
+
 // Client OSC client
 type Client struct {
 	ip    string
