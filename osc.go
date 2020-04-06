@@ -126,7 +126,7 @@ func (c *Client) Send(oscAddr string, buf *ArgumentBuffer) error {
 }
 
 // Receive OSC受信
-func (s *Server) Receive(oscAddr string) error {
+func (s *Server) Receive() error {
 	portStr := strconv.Itoa(s.port)
 	udpAddr, err := net.ResolveUDPAddr("udp", ":"+portStr)
 	if err != nil {
