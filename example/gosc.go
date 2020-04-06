@@ -34,7 +34,7 @@ func main() {
 		// TODO ヘルプ表示
 		portStr := flag.Arg(1)
 		port, _ := strconv.Atoi(portStr)
-		receive(port, "/test") // TODO OSCアドレス周り追加
+		receive(port)
 
 	default:
 		// TODO add flag usage
@@ -44,30 +44,31 @@ func main() {
 
 func send(ip string, port int, oscAddr string) {
 	s := osc.NewSender(ip, port)
-	buf := osc.ArgumentBuffer{}
+	m := osc.Message{Address: oscAddr}
 	for i := 4; i < len(flag.Args()); i++ {
 		a := flag.Arg(i)
 		// int
 		if i, err := strconv.Atoi(a); err == nil {
-			buf.AddInt(int32(i))
+			m.AddInt(int32(i))
 			continue
 		}
 		// float
 		if f, err := strconv.ParseFloat(a, 32); err == nil {
-			buf.AddFloat(float32(f))
+			m.AddFloat(float32(f))
 			continue
 		}
 
 		// string
-		buf.AddString(a)
+		a = osc.TerminateOSCString(a)
+		m.AddString(a)
 	}
 
-	if err := s.Send(oscAddr, &buf); err != nil {
+	if err := s.Send(&m); err != nil {
 		log.Fatalln(err)
 	}
 }
 
-func receive(port int, oscAddr string) {
+func receive(port int) {
 	r := osc.NewReceiver(port)
-	r.Receive(oscAddr)
+	r.Receive()
 }
