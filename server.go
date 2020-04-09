@@ -9,6 +9,11 @@ import (
 	"strconv"
 )
 
+// Handler OSC messege handler
+type Handler interface {
+	Handle(m *Message)
+}
+
 // Server OSC server
 type Server struct {
 	port  int
