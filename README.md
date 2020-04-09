@@ -1,4 +1,4 @@
-# go-osc  
+# osc  
 OSC(Open Sound Control) package for Go. Implemented in pure Go.  
 
 ## Implemented  
