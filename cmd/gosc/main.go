@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/AkiyukiOkayasu/osc"
 )
@@ -70,6 +72,11 @@ func send(ip string, port int, oscAddr string) {
 }
 
 func receive(port int) {
+	c := context.Background()
+	ctx, cancel := context.WithCancel(c)
+	// defer cancel()
 	r := osc.NewReceiver(port)
-	r.Receive()
+	go r.Receive(ctx)
+	time.Sleep(30 * time.Second)
+	cancel()
 }

@@ -4,6 +4,7 @@ Package osc is package send and receive OSC(Open Sound Control)
 package osc
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"strconv"
@@ -26,7 +27,7 @@ func NewReceiver(port int) *Server {
 }
 
 // Receive OSC受信
-func (s *Server) Receive() error {
+func (s *Server) Receive(ctx context.Context) error {
 	portStr := strconv.Itoa(s.port)
 	udpAddr, err := net.ResolveUDPAddr("udp", ":"+portStr)
 	if err != nil {
@@ -37,10 +38,18 @@ func (s *Server) Receive() error {
 		return err
 	}
 	defer conn.Close()
+	defer fmt.Println("defer print")
 
 	var b [512]byte
 
 	for {
+		select {
+		case <-ctx.Done():
+			fmt.Println("Exit now!")
+			return nil
+		default:
+		}
+
 		if _, _, err := conn.ReadFromUDP(b[0:]); err != nil {
 			return err
 		}
