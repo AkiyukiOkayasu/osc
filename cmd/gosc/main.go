@@ -74,9 +74,17 @@ func send(ip string, port int, oscAddr string) {
 func receive(port int) {
 	c := context.Background()
 	ctx, cancel := context.WithCancel(c)
-	// defer cancel()
-	r := osc.NewReceiver(port)
+	mux := osc.NewServeMux()
+	mux.Handle("/test", func(m *osc.Message) {
+		fmt.Println("/test handler begin")
+		for _, a := range m.Arguments {
+			fmt.Println(a.Typetag)
+		}
+		fmt.Println("/test handler end")
+	})
+	r := osc.NewReceiver(port, *mux)
 	go r.Receive(ctx)
+	defer fmt.Println("Finished")
 	time.Sleep(30 * time.Second)
-	cancel()
+	cancel() // Stop receiving OSC
 }
