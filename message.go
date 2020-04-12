@@ -10,57 +10,57 @@ import (
 
 // Argument OSC argument
 type Argument struct {
-	typetag  rune
-	argument interface{}
+	Typetag  rune
+	Argument interface{}
 }
 
 // Message wraped OSC message
 type Message struct {
 	Address   string
-	arguments []Argument
+	Arguments []Argument
 }
 
 // AddInt int追加
 func (m *Message) AddInt(arg int32) {
-	a := Argument{typetag: 'i', argument: arg}
-	m.arguments = append(m.arguments, a)
+	a := Argument{Typetag: 'i', Argument: arg}
+	m.Arguments = append(m.Arguments, a)
 }
 
 // AddFloat float追加
 func (m *Message) AddFloat(arg float32) {
-	a := Argument{typetag: 'f', argument: arg}
-	m.arguments = append(m.arguments, a)
+	a := Argument{Typetag: 'f', Argument: arg}
+	m.Arguments = append(m.Arguments, a)
 }
 
 // AddString string追加
 func (m *Message) AddString(arg string) {
 	arg = TerminateOSCString(arg)
-	a := Argument{typetag: 's', argument: arg}
-	m.arguments = append(m.arguments, a)
+	a := Argument{Typetag: 's', Argument: arg}
+	m.Arguments = append(m.Arguments, a)
 }
 
 // Bytes get OSC typetag and argument in []byte
 func (m *Message) Bytes() []byte {
 	b := new(bytes.Buffer)
 	typetag := ","
-	for _, a := range m.arguments {
-		typetag += string(a.typetag)
+	for _, a := range m.Arguments {
+		typetag += string(a.Typetag)
 	}
 	typetag = TerminateOSCString(typetag)
 	b.WriteString(typetag)
 
-	for _, a := range m.arguments {
-		switch a.typetag {
+	for _, a := range m.Arguments {
+		switch a.Typetag {
 		case 'i':
-			if v, ok := a.argument.(int32); ok {
+			if v, ok := a.Argument.(int32); ok {
 				binary.Write(b, binary.BigEndian, v)
 			}
 		case 'f':
-			if v, ok := a.argument.(float32); ok {
+			if v, ok := a.Argument.(float32); ok {
 				binary.Write(b, binary.BigEndian, v)
 			}
 		case 's':
-			if v, ok := a.argument.(string); ok {
+			if v, ok := a.Argument.(string); ok {
 				b.WriteString(v)
 			}
 		default:
