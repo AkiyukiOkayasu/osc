@@ -10,20 +10,16 @@ import (
 	"strconv"
 )
 
-// Handler OSC messege handler
-type Handler interface {
-	Handle(m *Message)
-}
-
 // Server OSC server
 type Server struct {
 	port  int
 	laddr *net.UDPAddr
+	mux   ServeMux
 }
 
 // NewReceiver Receiver作成
-func NewReceiver(port int) *Server {
-	return &Server{port: port, laddr: nil}
+func NewReceiver(port int, mux ServeMux) *Server {
+	return &Server{port: port, laddr: nil, mux: mux}
 }
 
 // Receive OSC受信
@@ -55,7 +51,7 @@ func (s *Server) Receive(ctx context.Context) error {
 		}
 		p := string(b[0:])
 		m := splitOSCPacket(p)
-		// TODO handler implementation
 		fmt.Printf("OSC address: %s\n", m.Address)
+		s.mux.dispatch(&m)
 	}
 }
