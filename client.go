@@ -29,7 +29,7 @@ func (c *Client) Send(m *Message) error {
 	}
 
 	dataToSend := new(bytes.Buffer)
-	m.Address = TerminateOSCString(m.Address)
+	m.Address = terminateOSCString(m.Address)
 	dataToSend.WriteString(m.Address)
 
 	portStr := strconv.Itoa(c.port)
