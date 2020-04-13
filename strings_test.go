@@ -75,7 +75,7 @@ func Test_split2OSCStrings(t *testing.T) {
 	}
 }
 
-func TestTerminateOSCString(t *testing.T) {
+func Test_terminateOSCString(t *testing.T) {
 	type args struct {
 		str string
 	}
@@ -90,8 +90,8 @@ func TestTerminateOSCString(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := TerminateOSCString(tt.args.str); got != tt.want {
-				t.Errorf("TerminateOSCString() = %v, want %v", got, tt.want)
+			if got := terminateOSCString(tt.args.str); got != tt.want {
+				t.Errorf("terminateOSCString() = %v, want %v", got, tt.want)
 			}
 		})
 	}
