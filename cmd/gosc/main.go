@@ -17,13 +17,11 @@ limitations under the License.
 package main
 
 import (
-	"context"
 	"flag"
 	"fmt"
 	"log"
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/AkiyukiOkayasu/osc"
 )
@@ -49,16 +47,6 @@ func main() {
 		oscAddr := flag.Arg(3)
 		send(ip, port, oscAddr)
 
-	case "receive":
-		if len(flag.Args()) < 2 {
-			flag.Usage()
-			return
-		}
-
-		portStr := flag.Arg(1)
-		port, _ := strconv.Atoi(portStr)
-		receive(port)
-
 	default:
 		flag.Usage()
 	}
@@ -66,7 +54,8 @@ func main() {
 
 func send(ip string, port int, oscAddr string) {
 	s := osc.NewSender(ip, port)
-	m := osc.Message{Address: oscAddr}
+	m := osc.NewMessage(oscAddr)
+
 	for i := 4; i < len(flag.Args()); i++ {
 		a := flag.Arg(i)
 		// int
@@ -85,25 +74,7 @@ func send(ip string, port int, oscAddr string) {
 		m.AddString(a)
 	}
 
-	if err := s.Send(&m); err != nil {
+	if err := s.Send(m); err != nil {
 		log.Fatalln(err)
 	}
-}
-
-func receive(port int) {
-	c := context.Background()
-	ctx, cancel := context.WithCancel(c)
-	mux := osc.NewServeMux()
-	mux.Handle("/test", func(m *osc.Message) {
-		fmt.Println("/test handler begin")
-		for _, a := range m.Arguments {
-			fmt.Println(a.Type())
-		}
-		fmt.Println("/test handler end")
-	})
-	r := osc.NewReceiver(port, *mux)
-	go r.Receive(ctx)
-	defer fmt.Println("Finished")
-	time.Sleep(30 * time.Second)
-	cancel() // Stop receiving OSC
 }
