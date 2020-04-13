@@ -53,7 +53,6 @@ func splitOSCPacket(str string) (m Message) {
 			if err := binary.Read(b, binary.BigEndian, &v); err != nil {
 				fmt.Print("binary.Read failed: ", err)
 			}
-			fmt.Printf("i: %d\n", v)
 			m.AddInt(v)
 			i += 4
 		case 'f':
@@ -62,7 +61,6 @@ func splitOSCPacket(str string) (m Message) {
 			if err := binary.Read(b, binary.BigEndian, &v); err != nil {
 				fmt.Print("binary.Read failed: ", err)
 			}
-			fmt.Printf("f: %3f\n", v)
 			m.AddFloat(v)
 			i += 4
 		case 's':
