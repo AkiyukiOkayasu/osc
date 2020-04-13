@@ -1,7 +1,6 @@
 # osc  
 OSC (Open Sound Control) package for Go.  
-Implemented in pure Go.  
-A portion of The [Open Sound Control 1.0 Specification](http://opensoundcontrol.org/spec-1_0) has been implemented.  
+A part of The [Open Sound Control 1.0 Specification](http://opensoundcontrol.org/spec-1_0) has been implemented in pure Go.  
 
 ## Type  
 - int32  
@@ -18,21 +17,20 @@ OSC Bundles are NOT supported.
 
 ## Command line OSC sender, receiver  
 gosc is
-#### Send  
+### Send  
 ```bash
 gosc send localhost 8080 /test 123 3.14 foo
 ```
 
-#### Receive  
+### Receive  
 ```bash
 gosc receive 8080
 ```
 
-### Contribution  
+## Contribution  
 Contributions are welcome.  
 Please send me a pull request if you have any ideas.  
 
-
 ### LICENSE  
-Apache 2.0
-See [LICENSE]
+Apache 2.0  
+See [LICENSE](LICENSE)  
