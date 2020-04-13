@@ -92,7 +92,7 @@ func (m *Message) Bytes() []byte {
 				b.WriteString(v)
 			}
 		default:
-			println("Unexpected typetag")
+			println("unexpected typetag")
 		}
 	}
 	return b.Bytes()
