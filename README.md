@@ -59,7 +59,6 @@ func main() {
 		log.Fatalln(err)
 	}
 }
-
 ```
 
 ### Receive  
@@ -84,7 +83,7 @@ func main() {
 	// OSC handler for /foo
 	mux := osc.NewServeMux()
 	mux.Handle("/foo", func(m *osc.Message) {
-		fmt.Printf("OSC Address: %s\n", m.Address)
+		fmt.Println("OSC Address: " + m.Address())
 		for _, a := range m.Arguments {
 			switch a.Type() {
 			case 'i':
@@ -97,7 +96,7 @@ func main() {
 				}
 			case 's':
 				if v, ok := a.String(); ok {
-					fmt.Printf("Foo String: %s\n", v)
+					fmt.Println("Foo String: " + v)
 				}
 			default:
 				fmt.Printf("Unexpected type: %v\n", a.Type())
@@ -107,7 +106,7 @@ func main() {
 
 	// Another OSC handler for /bar
 	mux.Handle("/bar", func(m *osc.Message) {
-		fmt.Printf("OSC Address: %s\n", m.Address)
+		fmt.Println("OSC Address: " + m.Address())
 		for _, a := range m.Arguments {
 			switch a.Type() {
 			case 'i':
@@ -120,7 +119,7 @@ func main() {
 				}
 			case 's':
 				if v, ok := a.String(); ok {
-					fmt.Printf("Bar String: %s\n", v)
+					fmt.Println("Bar String: " + v)
 				}
 			default:
 				fmt.Printf("Unexpected type: %v\n", a.Type())
@@ -136,7 +135,6 @@ func main() {
 
 	cancel() // Stop receiving OSC
 }
-
 ```
 
 ## Command line OSC tool  
