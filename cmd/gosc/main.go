@@ -15,14 +15,14 @@ import (
 func main() {
 	// Flag usage
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, "gosc command-line OSC sender/receiver\n")
+		d := "gosc command-line OSC sender/receiver\nSend: gosc send ip port address arguments...\nReceive: gosc receive port\nctrl+c for quit\n"
+		fmt.Fprintf(os.Stderr, d)
 	}
 
 	flag.Parse()
 	switch flag.Arg(0) {
 	case "send":
 		if len(flag.Args()) < 4 {
-			// TODO ヘルプ表示
 			flag.Usage()
 			return
 		}
@@ -34,13 +34,16 @@ func main() {
 		send(ip, port, oscAddr)
 
 	case "receive":
-		// TODO ヘルプ表示
+		if len(flag.Args()) < 2 {
+			flag.Usage()
+			return
+		}
+
 		portStr := flag.Arg(1)
 		port, _ := strconv.Atoi(portStr)
 		receive(port)
 
 	default:
-		// TODO add flag usage
 		flag.Usage()
 	}
 }
@@ -55,6 +58,7 @@ func send(ip string, port int, oscAddr string) {
 			m.AddInt(int32(i))
 			continue
 		}
+
 		// float
 		if f, err := strconv.ParseFloat(a, 32); err == nil {
 			m.AddFloat(float32(f))

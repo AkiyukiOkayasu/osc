@@ -4,6 +4,8 @@ Package osc is package send and receive OSC(Open Sound Control)
 package osc
 
 // ServeMux OSC handler mux
+// key: OSC address
+// value: handler function
 type ServeMux struct {
 	m map[string]Handler
 }
@@ -13,7 +15,7 @@ func NewServeMux() *ServeMux {
 	return &ServeMux{map[string]Handler{}}
 }
 
-// Handle TODO add description
+// Handle add handler for an OSC address
 func (s *ServeMux) Handle(pattern string, handler HandlerFunc) {
 	s.m[pattern] = handler
 }
