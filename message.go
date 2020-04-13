@@ -38,6 +38,11 @@ type Message struct {
 	Arguments []Argument
 }
 
+// NewMessage TODO add description
+func NewMessage(address string) *Message {
+	return &Message{Address: address}
+}
+
 // AddInt add int to message
 func (m *Message) AddInt(arg int32) {
 	a := Argument{typetag: 'i', argument: arg}
