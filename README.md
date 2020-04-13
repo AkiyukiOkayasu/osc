@@ -31,6 +31,7 @@ gosc receive 8080
 Contributions are welcome.  
 Please send me a pull request if you have any ideas.  
 
-### LICENSE  
+
+## LICENSE  
 Apache 2.0  
 See [LICENSE](LICENSE)  
