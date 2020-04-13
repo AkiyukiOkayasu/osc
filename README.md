@@ -2,7 +2,7 @@
 
 OSC (Open Sound Control) package for Go.  
 A part of The [Open Sound Control 1.0 Specification](http://opensoundcontrol.org/spec-1_0) has been implemented in pure Go.  
-You can work with OSC in Mac, Win, Linux (including Raspberry Pi).  
+You can work with OSC in macOS, Windows, Linux (also work with Raspberry Pi).  
 
 ## Features  
 
@@ -22,9 +22,8 @@ If you're using Go
 ```bash
 go get github.com/AkiyukiOkayasu/osc
 ```
-to install it.  
 
-If you're not using Go and only need gosc (command line OSC tool) download the zip from [Release](AkiyukiOkayasu/osc/releases/latest/download/gosc.zip).  
+If you're not using Go and only need gosc (command line OSC tool) download the zip from [Release](AkiyukiOkayasu/osc/releases/latest).  
 
   
 ## Usage example  
@@ -139,19 +138,19 @@ func main() {
 
 ## Command line OSC tool  
 
-gosc is a command line tool to send OSC in the terminal.  
+gosc is a command line tool to send OSC.  
 
 ### Send  
 ```bash
 gosc send localhost 8080 /test 123 3.14 foo
 ```
-Any number of OSCC arguments can be added.  
+Any number of OSC arguments can be added.  
 Type is automatically determined (int32, float32, string only).  
 
 ## Contribution  
 
 Contributions are welcome.  
-Please send me a pull request if you have any ideas.  
+Please send a pull request if you have any ideas.  
 
 ## LICENSE  
 
