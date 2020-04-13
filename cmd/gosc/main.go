@@ -29,7 +29,7 @@ import (
 func main() {
 	// Flag usage
 	flag.Usage = func() {
-		d := "gosc command-line OSC sender/receiver\nSend: gosc send ip port address arguments...\nReceive: gosc receive port\nctrl+c for quit\n"
+		d := "gosc command-line OSC sender\nSend: gosc send ip port address arguments...\n"
 		fmt.Fprintf(os.Stderr, d)
 	}
 
