@@ -24,13 +24,13 @@ func NewSender(ip string, port int) *Client {
 
 // Send OSC送信
 func (c *Client) Send(m *Message) error {
-	if m.Address[0] != '/' {
+	if m.address[0] != '/' {
 		fmt.Println("OSC address must start with '/'")
 	}
 
 	dataToSend := new(bytes.Buffer)
-	m.Address = terminateOSCString(m.Address)
-	dataToSend.WriteString(m.Address)
+	m.address = terminateOSCString(m.address)
+	dataToSend.WriteString(m.address)
 
 	portStr := strconv.Itoa(c.port)
 	udpRAddr, _ := net.ResolveUDPAddr("udp", c.ip+":"+portStr)

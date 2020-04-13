@@ -34,13 +34,18 @@ type Argument struct {
 
 // Message OSC address and Arguments array
 type Message struct {
-	Address   string
+	address   string
 	Arguments []Argument
 }
 
 // NewMessage TODO add description
 func NewMessage(address string) *Message {
-	return &Message{Address: address}
+	return &Message{address: address}
+}
+
+// Address return OSC address
+func (m *Message) Address() string {
+	return m.address
 }
 
 // AddInt add int to message

@@ -38,7 +38,7 @@ func (s *ServeMux) Handle(pattern string, handler HandlerFunc) {
 
 // dispatch handler
 func (s *ServeMux) dispatch(m *Message) {
-	if h, ok := s.m[m.Address]; ok {
+	if h, ok := s.m[m.address]; ok {
 		h.serveOSC(m)
 	}
 }
