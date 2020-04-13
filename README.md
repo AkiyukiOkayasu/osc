@@ -1,9 +1,11 @@
 # osc  
+
 OSC (Open Sound Control) package for Go.  
 A part of The [Open Sound Control 1.0 Specification](http://opensoundcontrol.org/spec-1_0) has been implemented in pure Go.  
 You can work with OSC in Mac, Win, Linux (including Raspberry Pi).  
 
 ## Features  
+
 ### Type  
 - int32  
 - float32  
@@ -15,6 +17,7 @@ Only OSC Messages are implemented.
 OSC Bundles are NOT supported.  
 
 ## Install  
+
 If you're using Go  
 ```bash
 go get github.com/AkiyukiOkayasu/osc
@@ -25,6 +28,7 @@ If you're not using Go and only need gosc (command line OSC tool) download the z
 
   
 ## How to use  
+
 ### Send  
 ```Go
 package main
@@ -57,7 +61,8 @@ func main() {
 ```Go
 ```
 
-## Command line OSC sender, receiver  
+## Command line OSC tool  
+
 gosc is a command line tool to send and receive OSC in the terminal.  
 
 ### Send  
@@ -74,10 +79,11 @@ gosc receive 8080
 Ctrl+C to exit receiving OSC.  
 
 ## Contribution  
+
 Contributions are welcome.  
 Please send me a pull request if you have any ideas.  
 
-
 ## LICENSE  
+
 Apache 2.0  
 See [LICENSE](LICENSE)  
