@@ -5,7 +5,6 @@ package osc
 
 import (
 	"context"
-	"fmt"
 	"net"
 	"strconv"
 )
@@ -34,14 +33,12 @@ func (s *Server) Receive(ctx context.Context) error {
 		return err
 	}
 	defer conn.Close()
-	defer fmt.Println("defer print")
 
 	var b [512]byte
 
 	for {
 		select {
 		case <-ctx.Done():
-			fmt.Println("Exit now!")
 			return nil
 		default:
 		}
@@ -51,7 +48,6 @@ func (s *Server) Receive(ctx context.Context) error {
 		}
 		p := string(b[0:])
 		m := splitOSCPacket(p)
-		fmt.Printf("OSC address: %s\n", m.Address)
 		s.mux.dispatch(&m)
 	}
 }

@@ -16,7 +16,7 @@ const nullChar = '\x00'
 // null文字は4つまでしか連続しない
 func splitOSCPacket(str string) (m Message) {
 	if str[0] != '/' {
-		println("OSCアドレスは/から始まる必要があります")
+		println("OSC address must start with '/'")
 	}
 
 	s := strings.SplitN(str, ",", 2)                      //',' is beginning of OSC typetag
@@ -24,7 +24,7 @@ func splitOSCPacket(str string) (m Message) {
 	typetagAndArgs := "," + s[1]
 	typetag, args := split2OSCStrings(typetagAndArgs)
 	if typetag[0] != ',' {
-		println("OSC typetagは,から始まる必要があります")
+		println("OSC typetag must start with ','")
 	}
 	typetag = typetag[1:]
 
@@ -74,7 +74,6 @@ func numNeededNullChar(l int) int {
 	if l%4 != 0 {
 		n = 4 - (l % 4)
 	}
-	fmt.Printf("%d: %d\n", l, n)
 	return n
 }
 

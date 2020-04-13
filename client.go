@@ -25,7 +25,7 @@ func NewSender(ip string, port int) *Client {
 // Send OSC送信
 func (c *Client) Send(m *Message) error {
 	if m.Address[0] != '/' {
-		fmt.Println("Error: OSCアドレスは'/'から始まる必要があります")
+		fmt.Println("OSC address must start with '/'")
 	}
 
 	dataToSend := new(bytes.Buffer)
