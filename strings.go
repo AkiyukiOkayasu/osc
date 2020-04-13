@@ -29,7 +29,7 @@ import (
 const nullChar = '\x00'
 
 // splitOSCPacket split string by OSCstring terminate position
-// null文字は4つまでしか連続しない
+// The maximum number of consecutive null characters is 4.
 func splitOSCPacket(str string) (m Message) {
 	if str[0] != '/' {
 		println("OSC address must start with '/'")
@@ -64,10 +64,12 @@ func splitOSCPacket(str string) (m Message) {
 			m.AddFloat(v)
 			i += 4
 		case 's':
-			println("s")
+			// TODO split implementation
+			splited, _ := split2OSCStrings(args[i:])
+			m.AddString(splited)
+			i += len(splited) + numNeededNullChar(len(splited))
 		default:
-			println("Unexpected OSC typetag:")
-			println(t)
+			fmt.Printf("Unexpected OSC typetag: %c\n", t)
 		}
 	}
 	return
