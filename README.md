@@ -12,9 +12,9 @@ You can work with OSC in Mac, Win, Linux (including Raspberry Pi).
 - string  
 The other types are NOT supported.  
 
-### Messages or Bundles  
-Only OSC Messages are implemented.  
-OSC Bundles are NOT supported.  
+### Message or Bundle  
+Only OSC Message is implemented.  
+OSC Bundle is NOT supported.  
 
 ## Install  
 
