@@ -81,7 +81,7 @@ func receive(port int) {
 	mux.Handle("/test", func(m *osc.Message) {
 		fmt.Println("/test handler begin")
 		for _, a := range m.Arguments {
-			fmt.Println(a.Typetag)
+			fmt.Println(a.Type())
 		}
 		fmt.Println("/test handler end")
 	})
