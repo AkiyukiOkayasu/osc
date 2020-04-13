@@ -5,7 +5,7 @@ package osc
 
 // Handler OSC messege handler
 type Handler interface {
-	ServeOSC(m *Message)
+	serveOSC(m *Message)
 }
 
 // HandlerFunc is created to meet the requirements of Handler interface

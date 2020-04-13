@@ -5,7 +5,7 @@ package osc
 
 import "testing"
 
-func TestHandlerFunc_ServeOSC(t *testing.T) {
+func TestHandlerFunc_serveOSC(t *testing.T) {
 	type args struct {
 		m *Message
 	}
@@ -18,7 +18,7 @@ func TestHandlerFunc_ServeOSC(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tt.f.ServeOSC(tt.args.m)
+			tt.f.serveOSC(tt.args.m)
 		})
 	}
 }
