@@ -66,7 +66,6 @@ func send(ip string, port int, oscAddr string) {
 		}
 
 		// string
-		a = osc.TerminateOSCString(a)
 		m.AddString(a)
 	}
 
