@@ -141,7 +141,7 @@ func main() {
 
 ## Command line OSC tool  
 
-gosc is a command line tool to send and receive OSC in the terminal.  
+gosc is a command line tool to send OSC in the terminal.  
 
 ### Send  
 ```bash
@@ -149,12 +149,6 @@ gosc send localhost 8080 /test 123 3.14 foo
 ```
 Any number of OSCC arguments can be added.  
 Type is automatically determined (int32, float32, string only).  
-
-### Receive  
-```bash
-gosc receive 8080
-```
-Ctrl+C to exit receiving OSC.  
 
 ## Contribution  
 
