@@ -36,7 +36,7 @@ func (m *Message) AddFloat(arg float32) {
 
 // AddString add string to message
 func (m *Message) AddString(arg string) {
-	arg = TerminateOSCString(arg)
+	arg = terminateOSCString(arg)
 	a := Argument{typetag: 's', argument: arg}
 	m.Arguments = append(m.Arguments, a)
 }
@@ -48,7 +48,7 @@ func (m *Message) Bytes() []byte {
 	for _, a := range m.Arguments {
 		typetag += string(a.typetag)
 	}
-	typetag = TerminateOSCString(typetag)
+	typetag = terminateOSCString(typetag)
 	b.WriteString(typetag)
 
 	for _, a := range m.Arguments {
