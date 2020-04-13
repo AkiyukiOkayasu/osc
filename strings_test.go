@@ -53,7 +53,11 @@ func Test_numNeededNullChar(t *testing.T) {
 		{"1", args{1}, 3},
 		{"2", args{2}, 2},
 		{"3", args{3}, 1},
-		{"4", args{4}, 0},
+		{"4", args{4}, 4},
+		{"5", args{1}, 3},
+		{"6", args{2}, 2},
+		{"7", args{3}, 1},
+		{"8", args{4}, 4},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

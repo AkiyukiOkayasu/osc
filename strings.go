@@ -82,13 +82,10 @@ func terminateOSCString(str string) string {
 	return str
 }
 
-// numNeededNullChar is count nullChar for pad 4bytes
+// numNeededNullChar returns the required number of null characters for the length of the string.
+// l: length of OSC string
 func numNeededNullChar(l int) int {
-	n := 0
-	if l%4 != 0 {
-		n = 4 - (l % 4)
-	}
-	return n
+	return 4 - (l % 4)
 }
 
 // split2OSCStrings hogehgoe
