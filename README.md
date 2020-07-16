@@ -23,8 +23,6 @@ If you're using Go
 go get github.com/AkiyukiOkayasu/osc
 ```
 
-If you're not using Go and only need gosc (command line OSC tool) download the zip from [Release](AkiyukiOkayasu/osc/releases/latest).  
-
   
 ## Usage example  
 
