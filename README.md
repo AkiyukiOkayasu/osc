@@ -7,9 +7,11 @@ You can work with OSC in macOS, Windows, Linux (also work with Raspberry Pi).
 ## Features  
 
 ### Type  
+These types are supported.  
 - int32  
 - float32  
 - string  
+
 The other types are NOT supported.  
 
 ### Message or Bundle  
@@ -18,7 +20,6 @@ OSC Bundle is NOT supported.
 
 ## Install  
 
-If you're using Go  
 ```bash
 go get github.com/AkiyukiOkayasu/osc
 ```
@@ -153,4 +154,4 @@ Please send a pull request if you have any ideas.
 ## LICENSE  
 
 Apache 2.0  
-See [LICENSE](LICENSE)  
+[LICENSE](LICENSE)  
